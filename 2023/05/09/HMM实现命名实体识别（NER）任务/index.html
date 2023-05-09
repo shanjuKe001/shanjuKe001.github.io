@@ -1,0 +1,717 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Keshanju">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="什么是隐马模型HMM隐马尔可夫模型（Hidden Markov Model）或称作隐性马尔可夫模型，是统计模型，它用来描述一个含有隐含未知参数的马尔可夫过程。其难点是从可观察的参数中确定该过程的隐含参数。然后利用这些参数来作进一步的分析，例如模式识别。隐马尔可夫模型是马尔科夫链的一种，它的状态不能直接观察到，但能通过观测向量序列观察到，每个观测向量都是通过某些概率密度分布表现为各种状态，每一个观测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HMM实现命名实体识别（NER）任务">
+<meta property="og:url" content="http://example.com/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Keshanju&#39;s Blog">
+<meta property="og:description" content="什么是隐马模型HMM隐马尔可夫模型（Hidden Markov Model）或称作隐性马尔可夫模型，是统计模型，它用来描述一个含有隐含未知参数的马尔可夫过程。其难点是从可观察的参数中确定该过程的隐含参数。然后利用这些参数来作进一步的分析，例如模式识别。隐马尔可夫模型是马尔科夫链的一种，它的状态不能直接观察到，但能通过观测向量序列观察到，每个观测向量都是通过某些概率密度分布表现为各种状态，每一个观测">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/1.png">
+<meta property="og:image" content="http://example.com/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/2.png">
+<meta property="og:image" content="http://example.com/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/3.png">
+<meta property="article:published_time" content="2023-05-09T13:48:56.000Z">
+<meta property="article:modified_time" content="2023-05-09T13:55:19.398Z">
+<meta property="article:author" content="Keshanju">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/1.png">
+  
+  
+  
+  <title>HMM实现命名实体识别（NER）任务 - Keshanju&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Keshanju&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="HMM实现命名实体识别（NER）任务"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-09 21:48" pubdate>
+          2023年5月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          88 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">HMM实现命名实体识别（NER）任务</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="什么是隐马模型HMM"><a href="#什么是隐马模型HMM" class="headerlink" title="什么是隐马模型HMM"></a>什么是隐马模型HMM</h1><p>隐马尔可夫模型（Hidden Markov Model）或称作隐性马尔可夫模型，是统计模型，它用来描述一个含有隐含未知参数的马尔可夫过程。其难点是从可观察的参数中确定该过程的隐含参数。然后利用这些参数来作进一步的分析，例如模式识别。<br>隐马尔可夫模型是马尔科夫链的一种，它的状态不能直接观察到，但能通过观测向量序列观察到，每个观测向量都是通过某些概率密度分布表现为各种状态，每一个观测向量是由一个具有相应概率密度分布的状态序列产生。所以，隐马模型是一个双重随机过程——具有一定状态数的隐马尔科夫链和显示随机函数集。<br>关于隐马模型的说明介绍在网上很容易就能找到，也肯定比我讲的好，也就不再说明了。这里我贴上一篇我认为讲的非常通俗易懂的文章：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/skyme/p/4651331.html">一文搞懂HMM</a>。</p>
+<h1 id="什么样的问题需要用到HMM模型"><a href="#什么样的问题需要用到HMM模型" class="headerlink" title="什么样的问题需要用到HMM模型"></a>什么样的问题需要用到HMM模型</h1><p>使用隐马模型解决的问题一般有两个特征：</p>
+<ol>
+<li>问题是基于序列（马尔科夫链）的，比如时间序列或者状态序列；</li>
+<li>问题中有两类数据，一类序列数据是可以观测到的，即观测序列；另一类数据是不能观测到的，即隐藏状态序列，简称状态序列。</li>
+</ol>
+<p>如果一个问题满足这两个特征，那么这个问题一般可以采用HMM模型来尝试解决。这样的例子在生活中是十分常见的。比如：我在写这个实验报告的时候，在键盘上敲出的一串字符就是观测序列，而我实际上想要写下来的就是隐藏序列，而输入法就需要从我敲入的字符尽可能地猜测我想要输入的是什么，并且把可能性最大的词语放在最前面，这就可以看作一个HMM模型。这个例子是我在一篇博客上看到的，这篇博客也讲的很透彻，贴上链接：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29938926">隐马尔可夫模型HMM</a>。</p>
+<h1 id="Python手写HMM模型实现命名实体识别（NER）任务"><a href="#Python手写HMM模型实现命名实体识别（NER）任务" class="headerlink" title="Python手写HMM模型实现命名实体识别（NER）任务"></a>Python手写HMM模型实现命名实体识别（NER）任务</h1><h2 id="命名识别任务（Named-Entity-Recognition-NER"><a href="#命名识别任务（Named-Entity-Recognition-NER" class="headerlink" title="命名识别任务（Named Entity Recognition,NER)"></a>命名识别任务（Named Entity Recognition,NER)</h2><p>NER是指识别文本中特定意义的实体，包括人名、地名、机构名等等。命名实体识别是自然语言处理中的一个重要任务，具有广泛的应用场景，例如信息提取、问答系统、机器翻译和智能客服等。下图所示中文命名实体识别的tag，共有33个：<br><img src="/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/1.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>文本中以每一个字每单位，对应上面的任一种标签。NER任务通常被视为一个序列标注任务，也就是将输入的文本序列中的每一个单词或字符都打上对应的标签，表示其是否是一个命名实体以及其所属的类型。例如对于下面这句话：</p>
+<blockquote>
+<p>张建民现任上海浦东发展银行首席执行官。</p>
+</blockquote>
+<p>命名实体识别的任务是将其中的实体“张建民”标注为人名（PER），将“上海浦东发展银行”标注为组织机构名（ORG），将“首席执行官”标注为头衔（TITLE）。标注结果可以表示为：</p>
+<pre><code class="hljs">张 B-NAME   
+建 M-NAME
+民 E-NAME
+现 O
+任 O
+上 B-ORG
+海 M-ORG
+浦 M-ORG
+东 M-ORG
+发 M-ORG
+展 M-ORG
+银 M-ORG
+行 E-ORG
+首 B-TITLE
+席 M-TITLE
+审 M-TITLE
+计 M-TITLE
+官 E-TITLE
+。 O
+</code></pre>
+<h2 id="HMM模型的参数"><a href="#HMM模型的参数" class="headerlink" title="HMM模型的参数"></a>HMM模型的参数</h2><p>隐马模型可以用五个元素来描述，包括两个状态机和和三个概率矩阵：</p>
+<ol>
+<li><strong>隐含状态S</strong></li>
+</ol>
+<p>这些状态之间满足马尔可夫性质，是马尔可夫模型中实际所隐含的状态，无法通过直接观测而得到。例如上面提到的中文标签。隐藏状态数目记为N。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">sorted_labels_chn = [<br>    <span class="hljs-string">&#x27;O&#x27;</span>,<br>    <span class="hljs-string">&#x27;B-NAME&#x27;</span>, <span class="hljs-string">&#x27;M-NAME&#x27;</span>, <span class="hljs-string">&#x27;E-NAME&#x27;</span>, <span class="hljs-string">&#x27;S-NAME&#x27;</span><br>    , <span class="hljs-string">&#x27;B-CONT&#x27;</span>, <span class="hljs-string">&#x27;M-CONT&#x27;</span>, <span class="hljs-string">&#x27;E-CONT&#x27;</span>, <span class="hljs-string">&#x27;S-CONT&#x27;</span><br>    , <span class="hljs-string">&#x27;B-EDU&#x27;</span>, <span class="hljs-string">&#x27;M-EDU&#x27;</span>, <span class="hljs-string">&#x27;E-EDU&#x27;</span>, <span class="hljs-string">&#x27;S-EDU&#x27;</span><br>    , <span class="hljs-string">&#x27;B-TITLE&#x27;</span>, <span class="hljs-string">&#x27;M-TITLE&#x27;</span>, <span class="hljs-string">&#x27;E-TITLE&#x27;</span>, <span class="hljs-string">&#x27;S-TITLE&#x27;</span><br>    , <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;M-ORG&#x27;</span>, <span class="hljs-string">&#x27;E-ORG&#x27;</span>, <span class="hljs-string">&#x27;S-ORG&#x27;</span><br>    , <span class="hljs-string">&#x27;B-RACE&#x27;</span>, <span class="hljs-string">&#x27;M-RACE&#x27;</span>, <span class="hljs-string">&#x27;E-RACE&#x27;</span>, <span class="hljs-string">&#x27;S-RACE&#x27;</span><br>    , <span class="hljs-string">&#x27;B-PRO&#x27;</span>, <span class="hljs-string">&#x27;M-PRO&#x27;</span>, <span class="hljs-string">&#x27;E-PRO&#x27;</span>, <span class="hljs-string">&#x27;S-PRO&#x27;</span><br>    , <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;M-LOC&#x27;</span>, <span class="hljs-string">&#x27;E-LOC&#x27;</span>, <span class="hljs-string">&#x27;S-LOC&#x27;</span><br>]<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>可观测状态O</strong></li>
+</ol>
+<p>在模型中与隐含状态相关联，可通过直接观测而得到。例如所有汉字的集合。可观测状态的数目记为M。</p>
+<ol start="3">
+<li><strong>初始状态概率矩阵π</strong></li>
+</ol>
+<p>表示隐含状态在初始时刻t&#x3D;1时的概率矩阵，大小为N。(例如t&#x3D;1时，P(S1)&#x3D;p1、P(S2)&#x3D;P2、P(S3)&#x3D;p3，则初始状态概率矩阵 π&#x3D;[ p1 p2 p3 ]）</p>
+<ol start="4">
+<li><strong>隐含状态转移概率矩阵</strong></li>
+</ol>
+<p>描述了HMM模型中各个状态之间的转移概率，大小为N*N。其中Aij &#x3D; P( Sj | Si ),1≤i,,j≤N.表示在 t 时刻、状态为 Si 的条件下，在 t+1 时刻状态是 Sj 的概率。</p>
+<ol start="5">
+<li><strong>发射概率矩阵</strong></li>
+</ol>
+<p>描述了从隐状态生成观测结果的过程，大小为N*M。即每种实体标签（共N种）生成不同的汉字的概率（共M个）。</p>
+<p>因此，模型初始化如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">HMM</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        self.obs_list = []    <span class="hljs-comment">#观测值</span><br>        self.state_list = []  <span class="hljs-comment">#状态</span><br>        self.N = <span class="hljs-number">0</span>   <span class="hljs-comment">#状态数， =len(self.state_list)</span><br>        self.M = <span class="hljs-number">0</span>   <span class="hljs-comment">#观测值数 =len(self.obs_list)</span><br>        self.initial_prob = <span class="hljs-literal">None</span>     <span class="hljs-comment">#初始状态概率矩阵</span><br>        self.transition_prob = <span class="hljs-literal">None</span>  <span class="hljs-comment">#状态转移概率矩阵</span><br>        self.emission_prob = <span class="hljs-literal">None</span>    <span class="hljs-comment">#发射概率矩阵</span><br>        self.epsilon = <span class="hljs-number">1e-8</span> <span class="hljs-comment">#偏置，防止log0或乘0</span><br></code></pre></td></tr></table></figure>
+<p>注意到这里多出来一个偏置，先记下来，它的作用我们待会讨论。</p>
+<h2 id="HMM模型的计算过程"><a href="#HMM模型的计算过程" class="headerlink" title="HMM模型的计算过程"></a>HMM模型的计算过程</h2><h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p>首先我们要有标注好的训练集，训练集应该是由一系列文本和其对应的实体标注组成的。中间用空格隔开，每行一个字和一个标注。<br>我们需要读取训练集train.txt（大量的“观测结果——隐藏状态”序列），打开文件，遍历每一行。对于每行，使用split()函数将每个字符和标签分离开来，并将字符添加到obs_seq_list中，标签添加到state_seq_list中。如果字符不在观测列表obs_list中，那么它会被添加进去。同样的，如果标签不在状态列表state_list中，它也会被添加进去。注意，为了防止模型中出现未知的词语（即训练集中未出现的词语）的问题，在加载数据时将“UNK（unknown）”加入到观测状态序列中。这样，当我们在测试集中出现未知的词语，我们就用“UNK”代替。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">load_data</span>(<span class="hljs-params">self, data_path</span>):<br>    obs_seq_list = []  <span class="hljs-comment"># 观测序列列表</span><br>    state_seq_list = []  <span class="hljs-comment"># 状态序列列表</span><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(data_path, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> f:<br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> line.strip():<br>                <span class="hljs-keyword">continue</span><br>            char, label = line.strip().split()  <span class="hljs-comment"># 按空格分隔每个字符和标签</span><br>            obs_seq_list.append(char)<br>            state_seq_list.append(label)<br>            <br>            <span class="hljs-keyword">if</span> char <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.obs_list:<br>                self.obs_list.append(char)<br>            <span class="hljs-keyword">if</span> label <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.state_list:<br>                self.state_list.append(label)<br>    <br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;UNK&#x27;</span> <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> self.obs_list:<br>        self.obs_list.append(<span class="hljs-string">&#x27;UNK&#x27;</span>)<br><br>    self.M = <span class="hljs-built_in">len</span>(self.obs_list)<br>    self.N = <span class="hljs-built_in">len</span>(self.state_list)<br><br>    <span class="hljs-keyword">return</span> obs_seq_list, state_seq_list<br></code></pre></td></tr></table></figure>
+<h3 id="模型训练"><a href="#模型训练" class="headerlink" title="模型训练"></a>模型训练</h3><p>根据训练集，估计HMM的三个参数：初始概率矩阵、发射概率矩阵和状态转移概率矩阵。具体步骤如下：</p>
+<ol>
+<li><strong>初始化概率矩阵。</strong></li>
+</ol>
+<p>初始状态概率向量π，大小为N：初始状态为各个状态出现的概率，即π&#x3D;[π1, π2, …, πN]，其中，πi表示第i个标记类型的初始概率。<br>状态转移概率矩阵A，大小为N<em>N：状态转移概率矩阵A[i][j]表示从状态i转移到状态j的概率。<br>发射概率矩阵B，大小为N</em>M：发射概率矩阵B[i][j]表示从状态i生成观测结果j的概率。</p>
+<ol start="2">
+<li><strong>计算初始概率。</strong></li>
+</ol>
+<p>使用defaultdict构建状态索引字典state_index_dict，将状态列表self.state_list中的状态和索引对应起来，然后遍历观测序列列表state_seq_list，计算每个状态出现的次数，并将次数加入到初始概率矩阵self.initial_prob中。在计算过程中，为了避免出现零概率，如果某个状态未出现在state_seq_list中，则将其概率赋为self.epsilon。最后将概率归一化，得到最终的初始概率矩阵。</p>
+<ol start="3">
+<li><strong>计算状态转移矩阵。</strong></li>
+</ol>
+<p>遍历状态序列列表state_seq_list，统计相邻状态出现的次数，并将这些次数加入到状态转移概率矩阵self.transition_prob中。为了避免出现零概率，如果某个状态转移未出现，则将其概率赋为self.epsilon。最后将概率归一化，得到最终的状态转移概率矩阵。</p>
+<ol start="4">
+<li><strong>计算发射概率矩阵。</strong></li>
+</ol>
+<p>遍历状态序列列表state_seq_list和观测序列列表obs_seq_list，统计每个状态对应的观测值出现的次数，并将这些次数加入到发射概率矩阵self.emission_prob中。为了避免出现零概率，如果某个观测值未出现，则将其概率赋为self.epsilon。最后将概率归一化，得到最终的发射概率矩阵。</p>
+<ol start="5">
+<li><strong>概率矩阵优化。</strong></li>
+</ol>
+<p>为了防止概率值过小，在计算概率矩阵后，采用对数概率对概率矩阵进行优化，并使用epsilon来避免概率为零的情况。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">train</span>(<span class="hljs-params">self, obs_seq_list, state_seq_list</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    训练模型</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <span class="hljs-comment">#初始化概率矩阵</span><br>    self.initial_prob = np.zeros(self.N)<br>    self.transition_prob = np.zeros((self.N, self.N))<br>    self.emission_prob = np.zeros((self.N, self.M))<br><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;initialize training...&quot;</span>)<br>    <span class="hljs-comment">#计算初始概率矩阵</span><br>    state_index_dict = defaultdict(<span class="hljs-built_in">int</span>)<br>    <span class="hljs-keyword">for</span> i, state <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(self.state_list):<br>        state_index_dict[state] = i<br>    <span class="hljs-keyword">for</span> state_seq <span class="hljs-keyword">in</span> state_seq_list:<br>        self.initial_prob[state_index_dict[state_seq]] += <span class="hljs-number">1</span><br>    self.initial_prob[self.initial_prob == <span class="hljs-number">0</span>] = self.epsilon<br>    self.initial_prob /= <span class="hljs-built_in">len</span>(state_seq_list)<br>    <span class="hljs-comment">#计算状态转移概率矩阵</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(state_seq_list) - <span class="hljs-number">1</span>):<br>        curr_state = state_index_dict[state_seq_list[i]]<br>        next_state = state_index_dict[state_seq_list[i + <span class="hljs-number">1</span>]]<br>        self.transition_prob[curr_state][next_state] += <span class="hljs-number">1</span><br>    <span class="hljs-comment">#计算发射概率矩阵</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(state_seq_list)):<br>        state = state_index_dict[state_seq_list[i]]<br>        obs = self.obs_list.index(obs_seq_list[i])<br>        self.emission_prob[state][obs] += <span class="hljs-number">1</span><br><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.N):<br>        self.transition_prob[i][self.transition_prob[i] == <span class="hljs-number">0</span>] = self.epsilon<br>        self.emission_prob[i][self.emission_prob[i] == <span class="hljs-number">0</span>] = self.epsilon<br>        self.transition_prob[i] = self.transition_prob[i] / <span class="hljs-built_in">sum</span>(self.transition_prob[i])<br>        self.emission_prob[i] = self.emission_prob[i] / <span class="hljs-built_in">sum</span>(self.emission_prob[i])<br><br>    self.initial_prob = np.log(self.initial_prob)<br>    self.transition_prob = np.log(self.transition_prob)<br>    self.emission_prob = np.log(self.emission_prob)<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;DONE!&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+<h3 id="模型解码"><a href="#模型解码" class="headerlink" title="模型解码"></a>模型解码</h3><p>利用viterbi算法对测试集中的句子进行解码，得到最可能的实体标注序列。该函数的输入是一个观测序列obs_seq，输出是一个状态序列state_seq，表示观测序列obs_seq下，模型最可能的隐藏状态序列。<br>我们需要准备两个矩阵，delta和psi。delta[t][j]表示在时刻t，隐藏状态为j且观测序列为obs_seq[:t+1]时的最大概率。psi[t][j]表示在时刻t，隐藏状态为j且观测序列为obs_seq[:t+1]时的最大概率所对应的前一时刻的隐藏状态。<br>首先，我们根据初始概率矩阵和发射概率矩阵计算得到两个矩阵的第一列，然后通过循环计算其他列。最后根据回溯方法找出最佳路径，并将路径对应的状态序列返回。<br>值得注意的是，由于我们在训练的时候对所有的概率都取了对数，所以在矩阵计算的时候对应的乘法都转换为了加法。对概率取对数的好处是可以避免数值下溢问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">viterbi</span>(<span class="hljs-params">self, obs_seq</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">    维特比解码算法</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    T = <span class="hljs-built_in">len</span>(obs_seq)<br>    delta = np.zeros((T, self.N))<br>    psi = np.zeros((T, self.N))<br><br>    <span class="hljs-comment"># 初始化 delta 和 psi 的第一列</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.N):<br>        delta[<span class="hljs-number">0</span>][i] = self.initial_prob[i] + self.emission_prob[i][obs_seq[<span class="hljs-number">0</span>]]<br>        psi[<span class="hljs-number">0</span>][i] = <span class="hljs-number">0</span><br><br>    <span class="hljs-comment"># 计算 delta 和 psi 的其他列</span><br>    <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, T):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.N):<br>            max_delta = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;-inf&#x27;</span>) <span class="hljs-comment">#前一时刻状态转移的最大概率值</span><br>            max_index = <span class="hljs-literal">None</span> <span class="hljs-comment">#最大概率所对应的前一时刻隐藏状态</span><br>            <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.N):<br>                prob = delta[t - <span class="hljs-number">1</span>][i] + self.transition_prob[i][j]<br>                <span class="hljs-keyword">if</span> prob &gt; max_delta:<br>                    max_delta = prob<br>                    max_index = i<br>            delta[t][j] = max_delta + self.emission_prob[j][obs_seq[t]]<br>            psi[t][j] = max_index<br><br>    <span class="hljs-comment"># 回溯找出最佳路径</span><br>    state_seq = np.zeros(T, dtype=<span class="hljs-built_in">int</span>) <span class="hljs-comment"># 最优路径序列</span><br>    state_seq[T - <span class="hljs-number">1</span>] = np.argmax(delta[T - <span class="hljs-number">1</span>])<br>    <span class="hljs-keyword">for</span> t <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T - <span class="hljs-number">2</span>, -<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>):<br>        state_seq[t] = psi[t + <span class="hljs-number">1</span>][state_seq[t + <span class="hljs-number">1</span>]]<br><br>    <span class="hljs-keyword">return</span> [self.state_list[i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> state_seq]<br></code></pre></td></tr></table></figure>
+
+<h3 id="模型测试"><a href="#模型测试" class="headerlink" title="模型测试"></a>模型测试</h3><p>测试集形式是和训练集一样的，我们需要按行处理每一个测试样例，从中提取出观测序列。对于每一个测试样例，将其转换为一个观测序列，其中每个观测值表示一个字符在字典中的索引，如果字符不在字典中，则将其索引设置为 UNK 字符的索引。使用维特比算法对观测序列进行预测，得到一个状态序列，其中每个状态表示一个标签在字典中的索引。根据预测的标注序列我们生成一个与源文件类似的文件，只是将每个观测样例的实际标注替换为我们根据viterbi解码得到的预测标注。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict</span>(<span class="hljs-params">self, test_file, output_file</span>):<br>    obs_seq_list = []   <span class="hljs-comment">#观测序列列表</span><br>    state_seq_list = [] <span class="hljs-comment">#状态序列列表</span><br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(test_file, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        test_lines = f.readlines()<br>    <br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output_file, <span class="hljs-string">&quot;w&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> test_lines:<br>            line = line.strip()<br>            <span class="hljs-keyword">if</span> line:<br>                char, label = line.split()<br>                <span class="hljs-keyword">if</span> char <span class="hljs-keyword">in</span> self.obs_list:<br>                    obs_seq_list.append(self.obs_list.index(char))<br>                <span class="hljs-keyword">else</span>:<br>                    obs_seq_list.append(self.obs_list.index(<span class="hljs-string">&quot;UNK&quot;</span>))<br>                state_seq_list.append(label)<br>        <br>        pred_state_seq_list = self.viterbi(obs_seq_list)<br><br>        i = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> test_lines:<br>            line = line.strip()<br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> line:<br>                f.write(<span class="hljs-string">&quot;\n&quot;</span>)<br>            <span class="hljs-keyword">else</span>:<br>                char, __ = line.split()<br>                f.write(char + <span class="hljs-string">&quot; &quot;</span> + pred_state_seq_list[i] + <span class="hljs-string">&quot;\n&quot;</span>)<br>                i += <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="调用模型"><a href="#调用模型" class="headerlink" title="调用模型"></a>调用模型</h3><p>调用模型分别对中文和英文数据进行训练和预测，得到生成文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    hmm = HMM()<br>    train_path = <span class="hljs-string">&quot;Project2/NER/Chinese/train.txt&quot;</span><br>    <span class="hljs-comment">#train_path = &quot;Project2/NER/English/train.txt&quot;</span><br>    validation_path = <span class="hljs-string">&quot;Project2/NER/Chinese/validation.txt&quot;</span><br>    <span class="hljs-comment">#validation_path = &quot;Project2/NER/English/validation.txt&quot;</span><br>    my_path = <span class="hljs-string">&quot;my_pred_Chinese.txt&quot;</span><br>    <span class="hljs-comment">#my_path = &quot;my_pred_English.txt&quot;</span><br>    <br>    obs_seq_list, state_seq_list = hmm.load_data(train_path)<br>    hmm.train(obs_seq_list, state_seq_list)<br>    hmm.predict(validation_path,my_path)<br></code></pre></td></tr></table></figure>
+<p>然后，将测试文件和生成文件进行对比，得到模型的f1-score。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> sklearn <span class="hljs-keyword">import</span> metrics<br><span class="hljs-keyword">import</span> warnings<br>warnings.filterwarnings(<span class="hljs-string">&quot;ignore&quot;</span>)<br><br>sorted_labels_eng= [<span class="hljs-string">&quot;O&quot;</span>, <span class="hljs-string">&quot;B-PER&quot;</span>, <span class="hljs-string">&quot;I-PER&quot;</span>, <span class="hljs-string">&quot;B-ORG&quot;</span>, <span class="hljs-string">&quot;I-ORG&quot;</span>, <span class="hljs-string">&quot;B-LOC&quot;</span>, <span class="hljs-string">&quot;I-LOC&quot;</span>, <span class="hljs-string">&quot;B-MISC&quot;</span> , <span class="hljs-string">&quot;I-MISC&quot;</span>]<br><br>sorted_labels_chn = [<br><span class="hljs-string">&#x27;O&#x27;</span>,<br><span class="hljs-string">&#x27;B-NAME&#x27;</span>, <span class="hljs-string">&#x27;M-NAME&#x27;</span>, <span class="hljs-string">&#x27;E-NAME&#x27;</span>, <span class="hljs-string">&#x27;S-NAME&#x27;</span><br>, <span class="hljs-string">&#x27;B-CONT&#x27;</span>, <span class="hljs-string">&#x27;M-CONT&#x27;</span>, <span class="hljs-string">&#x27;E-CONT&#x27;</span>, <span class="hljs-string">&#x27;S-CONT&#x27;</span><br>, <span class="hljs-string">&#x27;B-EDU&#x27;</span>, <span class="hljs-string">&#x27;M-EDU&#x27;</span>, <span class="hljs-string">&#x27;E-EDU&#x27;</span>, <span class="hljs-string">&#x27;S-EDU&#x27;</span><br>, <span class="hljs-string">&#x27;B-TITLE&#x27;</span>, <span class="hljs-string">&#x27;M-TITLE&#x27;</span>, <span class="hljs-string">&#x27;E-TITLE&#x27;</span>, <span class="hljs-string">&#x27;S-TITLE&#x27;</span><br>, <span class="hljs-string">&#x27;B-ORG&#x27;</span>, <span class="hljs-string">&#x27;M-ORG&#x27;</span>, <span class="hljs-string">&#x27;E-ORG&#x27;</span>, <span class="hljs-string">&#x27;S-ORG&#x27;</span><br>, <span class="hljs-string">&#x27;B-RACE&#x27;</span>, <span class="hljs-string">&#x27;M-RACE&#x27;</span>, <span class="hljs-string">&#x27;E-RACE&#x27;</span>, <span class="hljs-string">&#x27;S-RACE&#x27;</span><br>, <span class="hljs-string">&#x27;B-PRO&#x27;</span>, <span class="hljs-string">&#x27;M-PRO&#x27;</span>, <span class="hljs-string">&#x27;E-PRO&#x27;</span>, <span class="hljs-string">&#x27;S-PRO&#x27;</span><br>, <span class="hljs-string">&#x27;B-LOC&#x27;</span>, <span class="hljs-string">&#x27;M-LOC&#x27;</span>, <span class="hljs-string">&#x27;E-LOC&#x27;</span>, <span class="hljs-string">&#x27;S-LOC&#x27;</span><br>]<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">check</span>(<span class="hljs-params">language, gold_path, my_path</span>):<br>    <span class="hljs-keyword">if</span> language == <span class="hljs-string">&quot;English&quot;</span>:<br>        sort_labels = sorted_labels_eng<br>    <span class="hljs-keyword">else</span>:<br>        sort_labels = sorted_labels_chn<br>    y_true = []<br>    y_pred = []<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(gold_path, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> g_f, <span class="hljs-built_in">open</span>(my_path, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&quot;utf-8&quot;</span>) <span class="hljs-keyword">as</span> m_f:<br>        g_lines = g_f.readlines()<br>        m_lines = m_f.readlines()<br>        <span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(g_lines) == <span class="hljs-built_in">len</span>(m_lines), <span class="hljs-string">&quot;Length is Not Equal.&quot;</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(g_lines)):<br>            <span class="hljs-keyword">if</span> g_lines[i] == <span class="hljs-string">&quot;\n&quot;</span>:<br>                <span class="hljs-keyword">continue</span><br>            g_word, g_tag = g_lines[i].strip().split(<span class="hljs-string">&quot; &quot;</span>)<br>            m_word, m_tag = m_lines[i].strip().split(<span class="hljs-string">&quot; &quot;</span>)<br>            y_true.append(g_tag)<br>            y_pred.append(m_tag)<br>    <span class="hljs-built_in">print</span>(metrics.classification_report(<br>        y_true = y_true, y_pred=y_pred, labels=sort_labels[<span class="hljs-number">1</span>:], digits=<span class="hljs-number">4</span><br>    ))<br>    <span class="hljs-keyword">return</span><br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    check(language = <span class="hljs-string">&quot;Chinese&quot;</span>, gold_path=<span class="hljs-string">&quot;Project2/NER/Chinese/validation.txt&quot;</span>, my_path=<span class="hljs-string">&quot;my_pred_Chinese.txt&quot;</span>)<br>    <span class="hljs-comment">#check(language = &quot;Chinese&quot;, gold_path=&quot;Project2/NER/English/validation.txt&quot;, my_path=&quot;my_pred_English.txt&quot;)</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><p>中文集结果，f1-score：0.8719：</p>
+<p><img src="/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/2.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p>英文集结果，f1-score：0.6440</p>
+<p><img src="/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/3.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h1 id="我的代码"><a href="#我的代码" class="headerlink" title="我的代码"></a>我的代码</h1><p>完整代码和数据集我都放在github了，附上链接：<br><a target="_blank" rel="noopener" href="https://github.com/shanjuKe001/HMM_NER/tree/master">https://github.com/shanjuKe001/HMM_NER&#x2F;tree&#x2F;master</a></p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E9%9A%90%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E6%A8%A1%E5%9E%8B/7932524">百度百科-隐马尔可夫模型</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/29938926">隐马尔科夫模型HMM</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45556665/article/details/127257452">隐马尔可夫模型(HMM)实现命名实体识别(NER)</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>HMM实现命名实体识别（NER）任务</div>
+      <div>http://example.com/2023/05/09/HMM实现命名实体识别（NER）任务/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Keshanju</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/07/DVWA%E9%9D%B6%E5%9C%BA%E6%90%AD%E5%BB%BA/" title="DVWA靶场搭建">
+                        <span class="hidden-mobile">DVWA靶场搭建</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
