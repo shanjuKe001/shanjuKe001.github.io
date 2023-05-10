@@ -1,0 +1,700 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Keshanju">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Spectre AttackIntroductionSpectre攻击于2017年被发现，并于2018年1月公开披露，它利用了许多现代处理器中存在的关键漏洞，包括英特尔、AMD和ARM。这些漏洞允许程序破坏进程间和进程内的隔离，因此恶意程序可以从它无法访问的区域读取数据。硬件保护机制(用于进程间隔离)或软件保护机制(用于进程内隔离)不允许这样的访问，但是cpu设计中存在漏洞，可以破坏这些保护。因为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Meltdown &amp; Spectre Attack Lab">
+<meta property="og:url" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/index.html">
+<meta property="og:site_name" content="Keshanju&#39;s Blog">
+<meta property="og:description" content="Spectre AttackIntroductionSpectre攻击于2017年被发现，并于2018年1月公开披露，它利用了许多现代处理器中存在的关键漏洞，包括英特尔、AMD和ARM。这些漏洞允许程序破坏进程间和进程内的隔离，因此恶意程序可以从它无法访问的区域读取数据。硬件保护机制(用于进程间隔离)或软件保护机制(用于进程内隔离)不允许这样的访问，但是cpu设计中存在漏洞，可以破坏这些保护。因为">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/1.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/2.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/3.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/4.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/5.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/6.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/7.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/8.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/9.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/10.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/11.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/12.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/13.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/14.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/15.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/16.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/17.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/18.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/19.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/20.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/21.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/22.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/23.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/24.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/25.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/26.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/27.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/28.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/29.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/30.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/31.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/32.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/33.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/34.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/35.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/36.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/37.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/38.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/39.png">
+<meta property="og:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/40.png">
+<meta property="article:published_time" content="2023-05-10T12:23:32.000Z">
+<meta property="article:modified_time" content="2023-05-10T12:43:25.828Z">
+<meta property="article:author" content="Keshanju">
+<meta property="article:tag" content="seed">
+<meta property="article:tag" content="软件安全">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/1.png">
+  
+  
+  
+  <title>Meltdown &amp; Spectre Attack Lab - Keshanju&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Keshanju&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Meltdown &amp; Spectre Attack Lab"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-10 20:23" pubdate>
+          2023年5月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          75 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Meltdown &amp; Spectre Attack Lab</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Spectre-Attack"><a href="#Spectre-Attack" class="headerlink" title="Spectre Attack"></a>Spectre Attack</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Spectre攻击于2017年被发现，并于2018年1月公开披露，它利用了许多现代处理器中存在的关键漏洞，包括英特尔、AMD和ARM。这些漏洞允许程序破坏进程间和进程内的隔离，因此恶意程序可以从它无法访问的区域读取数据。硬件保护机制(用于进程间隔离)或软件保护机制(用于进程内隔离)不允许这样的访问，但是cpu设计中存在漏洞，可以破坏这些保护。因为这个缺陷存在于硬件上，所以很难从根本上解决这个问题，除非我们改变计算机中的cpu。Spectre漏洞代表了cpu设计中的一种特殊类型的漏洞。</p>
+<h2 id="Tasks-1-and-2-Side-Channel-Attacks-via-CPU-Caches"><a href="#Tasks-1-and-2-Side-Channel-Attacks-via-CPU-Caches" class="headerlink" title="Tasks 1 and 2: Side Channel Attacks via CPU Caches"></a>Tasks 1 and 2: Side Channel Attacks via CPU Caches</h2><p>Meltdown和Spectre攻击都使用CPU缓存作为侧通道来窃取受保护的秘密。这种侧信道攻击中使用的技术称为FLUSH+RELOAD。我们将首先学习这种技术。在这两个任务中开发的代码将在以后的任务中用作构建块。<br>CPU缓存是计算机CPU使用的硬件缓存，用于减少从主存储器访问数据的平均成本(时间或能量)。从CPU缓存访问数据比从主存访问数据要快得多。当从主存中获取数据时，它们通常由CPU缓存，因此如果再次使用相同的数据，访问时间将会快得多。因此，当CPU需要访问某些数据时，它首先查看它的缓存。如果数据在那里(这被称为缓存命中)，它将直接从那里获取。如果数据不在那里(这被称为miss)， CPU将去主存获取数据。在后一种情况下花费的时间要长得多。大多数现代CPU都有CPU缓存。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/1.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h3 id="Task-1-Reading-from-Cache-versus-from-Memory"><a href="#Task-1-Reading-from-Cache-versus-from-Memory" class="headerlink" title="Task 1: Reading from Cache versus from Memory"></a>Task 1: Reading from Cache versus from Memory</h3><p>高速缓存用于以更快的速度向高速处理器提供数据。与主存储器相比，缓存存储器非常快。让我们看看时差。根据实验提供的代码CacheTime.c，有一个大小为10<em>4096的数组。首先访问数组中的两个元素array[3</em>4096]和array[7<em>4096]。因此，包含这两个元素的页面将被缓存。然后我们试着读取array[k</em>4096]，得到读取每个块所花费的时间（按CPU周期数计算）。编译并运行代码，可以得到类似下图的运行结果：<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/2.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>运行该程序10次以上，可以观察到每次array[3<em>4096]和array[7</em>4096]的访问速度都较其他元素快要快。同时，在本人电脑上大多数情况下array[3<em>4096]和array[7</em>4096]的访存时间都在80个CPU周期左右，因此使用默认阈值80也能使后面的实验拥有较大的成功率。这里的阈值指的是区分两种类型的内存访问的时间：从缓存访问数据与从主内存访问数据。这个阈值对于本实验中的其他任务很重要。</p>
+<h3 id="Task-2-Using-Cache-as-a-Side-Channel"><a href="#Task-2-Using-Cache-as-a-Side-Channel" class="headerlink" title="Task 2: Using Cache as a Side Channel"></a>Task 2: Using Cache as a Side Channel</h3><p>该任务的目标是使用侧信道提取受害者函数使用的秘密值。<br>假设有一个victim函数，它使用一个秘密值作为索引从数组中加载一些值。还要假设秘密值不能从外部访问。我们的目标是使用侧通道来获取这个秘密值。我们将使用的技术称为FLUSH+RELOAD。下图演示了该技术，它包括三个步骤:<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/3.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<ol>
+<li>从缓存内存中清除整个数组，以确保数组没有被缓存。</li>
+<li>调用victim函数，该函数根据secret的值访问其中一个数组元素。此操作将导致缓存相应的数组元素。</li>
+<li>重新加载整个数组，并测量重新加载每个元素所需的时间。如果一个特定元素的加载时间很快，那么很可能该元素已经在缓存中了。该元素必须是victim函数访问的元素。因此，我们可以计算出秘密值是什么。</li>
+</ol>
+<p>编译运行FlushReload.c，可以得到如下输出。当然并不是每次都能成功，可以通过调整CACHE HIT threshold为Task1派生的阈值，我在阈值为80的条件下运行成功的次数&#x2F;总运行次数为18&#x2F;20.<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/4.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h2 id="Task-3-Out-of-Order-Execution-and-Branch-Prediction"><a href="#Task-3-Out-of-Order-Execution-and-Branch-Prediction" class="headerlink" title="Task 3: Out-of-Order Execution and Branch Prediction"></a>Task 3: Out-of-Order Execution and Branch Prediction</h2><p>本任务的目标是理解cpu中的乱序执行。Spectre攻击就是依赖于cpu的这个特性。乱序执行是一种优化技术，它允许CPU最大限度地利用其所有执行单元。CPU不是严格按顺序处理指令，而是在所有所需资源可用时并行执行它们。当当前操作的执行单元被占用时，其他执行单元可以继续运行。<br>举个例子，让我们看看下面的代码。这段代码检查x是否小于size，如果小于则更新变量数据。假设size的值是10，那么如果x等于15，第3行中的代码将不会被执行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c">data = <span class="hljs-number">0</span>;<br><span class="hljs-keyword">if</span> (x &lt; size) &#123;<br>    data = data + <span class="hljs-number">5</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在上面的代码示例中，在微体系结构级别，第2行涉及两个操作:从内存中加载size的值，并将该值与x进行比较。如果size不在CPU缓存中，在读取该值之前可能需要数百个CPU时钟周期。现代cpu不再闲着，而是尝试预测比较的结果，并根据估计推测地执行分支。由于这种执行甚至在比较完成之前就开始了，因此这种执行称为乱序执行。在进行乱序执行之前，CPU存储其当前状态和寄存器的值。当size的值最终到达时，CPU将检查实际结果。如果预测为真，则会提交推测执行的执行，并且会有显著的性能增益。如果预测错误，CPU将恢复到其保存状态，因此乱序执行产生的所有结果将被丢弃，就像它从未发生过一样。这就是为什么从外部我们看到第3行从未执行。<br>英特尔和几个CPU制造商在无序执行的设计上犯了一个严重的错误。如果乱序执行不应该发生，那么它们会消除乱序执行对寄存器和内存的影响，因此执行不会导致任何可见的影响。然而，他们忘记了一件事，对CPU缓存的影响。在乱序执行期间，被引用的内存被取出到寄存器中，也存储在缓存中。如果必须丢弃乱序执行的结果，那么由执行引起的缓存也应该丢弃。不幸的是，在大多数cpu中并非如此。<br>因此，它产生了可观察到的效果。使用任务1和任务2中描述的侧信道技术，我们可以观察到这样的效果。幽灵攻击巧妙地利用这种可观察的效果来找出受保护的秘密值。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/5.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>在这个任务中，我们用一个实验来观察无序执行所造成的影响。对于执行推测执行的cpu，它们应该能够预测if条件的结果。cpu保存过去采取的分支的记录，然后使用这些过去的结果来预测在推测执行中应该采取的分支。因此，如果我们希望在推测执行中采取特定的分支，我们应该训练CPU，这样我们选择的分支就可以成为预测结果。训练是指我们在一个for循环中用一个小参数调用victim函数，训练cpu期望if条件为真。一旦CPU被训练，我们传递一个更大的值(97)给victim()函数。该值大于size，因此在实际执行时将采用victim()中if条件的假分支，而不是真分支。然而，我们已经从内存中刷新了变量大小，所以从内存中获取它的值可能需要一段时间。这时CPU将做出预测，并开始推测执行。<br>编译并运行SpectreExperiment.c，我们可以得到如下的运行结果。由于CPU缓存了额外的东西，在侧信道中可能会有一些噪声，导致并不是每一次都能得到期望的运行结果。我运行了20次，有19次成功在Cache中读取到值。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/6.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>然后我们注释掉mm_clflush(&amp;size);这一行代码再次编译运行，运行20次完全失败。因为没有在cache中刷掉size，在victim中，x与size的比较首先需要加载size的值，如果size在cache里，比起size在memory里访问速度快了非常多，加快了x与size的比较，使得在CPU在推测执行下一步的temp &#x3D; array[x * 4096 + DELTA];之前就得到了跳转预测失败的结果。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/7.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/8.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>将victim(i)改为victim(i+20)，再次编译运行，运行20次同样完全失败。因为cpu训练的结果就是一直不进入分支，所以在victim(97)后，CPU判断也不会进分支。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/9.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/10.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h2 id="Task-4-The-Spectre-Attack"><a href="#Task-4-The-Spectre-Attack" class="headerlink" title="Task 4: The Spectre Attack"></a>Task 4: The Spectre Attack</h2><p>正如我们在前面的任务中看到的，即使条件为假，我们也可以让cpu执行if语句的真分支。如果这样的乱序执行没有造成任何可见的影响，那就不是问题。但是，大多数具有此特性的cpu不会清理缓存，因此会留下一些乱序执行的痕迹。幽灵党利用这些痕迹窃取受保护的机密。<br>这些秘密可以是另一个进程中的数据，也可以是同一进程中的数据。如果机密数据在另一个进程中，则硬件级别的进程隔离可以防止一个进程从另一个进程窃取数据。如果数据处于同一进程中，则通常通过软件进行保护，例如沙箱机制。幽灵攻击可以针对这两种类型的秘密。然而，从另一个进程窃取数据比从同一进程窃取数据要困难得多。为了简单起见，本实验只关注从同一进程窃取数据。<br>当在浏览器中打开来自不同服务器的网页时，它们通常在同一进程中打开。在浏览器内实现的沙箱将为这些页面提供一个孤立的环境，因此其中一个页面将无法访问另一个页面的数据。大多数软件保护都依赖于条件检查来决定是否应该授予访问权限。通过Spectre攻击，我们可以让cpu执行（无序地）一个受保护的代码分支，即使条件检查失败，本质上击败了访问检查。<br>攻击者通过size_t index_beyond &#x3D; (size_t)(secret - (char*)buffer);从缓冲区开始计算secret的偏移量，该偏移量是个负数，不在Buffer的下界和上界的范围内。和task3一样，首先训练CPU，使其一直跳转到if成立的分支，使得CPU在无序执行中会返回buffer[index_beyond]，其中就包含了secret的值。虽然之后CPU会发现预测失败，restrictedAccess()返回0，但是缓存未被清理，array[s*4096+delta]仍然保存在缓存中。之后通过side-channel技术找出是array[]中的哪个元素。<br>编译运行SpectreAttack.c，得到如下结果，成功泄露出了秘密值83。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/11.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h2 id="Task-5-Improve-the-Attack-Accuracy"><a href="#Task-5-Improve-the-Attack-Accuracy" class="headerlink" title="Task 5: Improve the Attack Accuracy"></a>Task 5: Improve the Attack Accuracy</h2><p>在之前的任务中，可以观察到结果确实有一些噪声，并且结果并不总是准确的。这是因为CPU有时会在缓存中加载额外的值，期望稍后可能会使用它，或者阈值不是很准确。缓存中的噪音会影响我们的攻击结果。我们需要多次执行攻击。<br>我们使用统计技术。我们的想法是创建一个大小为256的分数数组，每个元素对应一个可能的秘密值。然后我们进行多次攻击。每次，如果我们的攻击程序说k是秘密(这个结果可能是假的)，我们给分数[k]加1。在多次运行攻击后，我们使用得分最高的值k作为我们对秘密的最终估计。这将产生比基于单次运行的估计更可靠的估计。<br>编译并运行SpectreAttackImproved.c，可能会出现以下两种结果：<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/12.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/13.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>运行多次发现，有时能够正确得到机密值，有时得分最高的却是0.<br>原因分析：由于spectreAttack中经常会因为restrictedAccess的返回值是0，导致array[0]一定会被访问。<br>思路：可以通过忽略第0位来解决，即i从1开始。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/14.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>注释掉printf那一行代码后，在20.04虚拟机上运行失败，无法得到正确结果，原因待分析。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/15.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>尝试usleep(1),usleep(10),usleep(100),发现sleep时间越长，成功率越高。猜测是usleep会挂起进程，执行进程的切换，可能进程切换比较慢，在切换前CPU已经乱序执行了一部分，访问了secret，然后再执行进程切换，使得判断跳转是否成立的步骤延后了，提高了成功率</p>
+<h2 id="Task-6-Steal-the-Entire-Secret-String"><a href="#Task-6-Steal-the-Entire-Secret-String" class="headerlink" title="Task 6: Steal the Entire Secret String"></a>Task 6: Steal the Entire Secret String</h2><p>在前面的任务中，我们只读取秘密字符串的第一个字符。在这个任务中，我们需要使用幽灵攻击打印出整个字符串。思路很简单，将task5的代码主要逻辑加上循环即可。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/16.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/17.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h1 id="Meltdown-Attack-Lab"><a href="#Meltdown-Attack-Lab" class="headerlink" title="Meltdown Attack Lab"></a>Meltdown Attack Lab</h1><h2 id="Introduction-1"><a href="#Introduction-1" class="headerlink" title="Introduction"></a>Introduction</h2><p>Meltdown漏洞于2017年被发现，并于2018年1月公开披露，它利用了许多现代处理器中存在的关键漏洞，包括英特尔和ARM的处理器。这些漏洞允许用户级程序读取存储在内核内存中的数据。大多数cpu中实现的硬件保护机制不允许这种访问，但这些cpu的设计存在漏洞，可能会破坏硬件保护。因为这个缺陷存在于硬件上，所以很难从根本上解决这个问题，除非我们改变计算机中的cpu。</p>
+<h2 id="Tasks-1-and-2-Side-Channel-Attacks-via-CPU-Caches-1"><a href="#Tasks-1-and-2-Side-Channel-Attacks-via-CPU-Caches-1" class="headerlink" title="Tasks 1 and 2: Side Channel Attacks via CPU Caches"></a>Tasks 1 and 2: Side Channel Attacks via CPU Caches</h2><p>Task1和2与Spectre的相同，这里也不再做过多介绍，直接附上运行结果。</p>
+<h3 id="Task-1-Reading-from-Cache-versus-from-Memory-1"><a href="#Task-1-Reading-from-Cache-versus-from-Memory-1" class="headerlink" title="Task 1: Reading from Cache versus from Memory"></a>Task 1: Reading from Cache versus from Memory</h3><p><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/18.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>编译运行多次，可以观察到每次array[3<em>4096]和array[7</em>4096]的访问速度都较其他元素快要快。同时，大多数情况下array[3<em>4096]和array[7</em>4096]的访存时间都在200个CPU周期以下，而其他元素的访问时间在200个周期以上，因此使用阈值200能使后面的实验拥有较大的成功率。</p>
+<h3 id="Task-2-Using-Cache-as-a-Side-Channel-1"><a href="#Task-2-Using-Cache-as-a-Side-Channel-1" class="headerlink" title="Task 2: Using Cache as a Side Channel"></a>Task 2: Using Cache as a Side Channel</h3><p><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/19.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>编译后运行20次，成功了10次，原因是阈值设置为80.将阈值修改为200后每次都能成功。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/20.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/21.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h2 id="Tasks-3-5-Preparation-for-the-Meltdown-Attack"><a href="#Tasks-3-5-Preparation-for-the-Meltdown-Attack" class="headerlink" title="Tasks 3-5: Preparation for the Meltdown Attack"></a>Tasks 3-5: Preparation for the Meltdown Attack</h2><p>内存隔离是系统安全的基础。在大多数操作系统中，内核内存不能被用户空间程序直接访问。这种隔离是由处理器的一个管理位实现的，它定义内核的内存页是否可以访问。这个位在CPU进入内核空间时设置，在CPU退出到用户空间时清除。有了这个特性，内核内存可以安全地映射到每个进程的地址空间，因此当用户级程序进入内核时，页表不需要更改。但是，Meltdown攻击破坏了这种隔离特性，它允许非特权用户级程序读取任意内核内存。</p>
+<h3 id="Task-3-Place-Secret-Data-in-Kernel-Space"><a href="#Task-3-Place-Secret-Data-in-Kernel-Space" class="headerlink" title="Task 3: Place Secret Data in Kernel Space"></a>Task 3: Place Secret Data in Kernel Space</h3><p>meltdown攻击需要两个重要条件，在我们的内核模块当中，需要确保满足以下条件：</p>
+<ol>
+<li>我们需要知道目标秘密数据的地址。内核模块将秘密数据的地址保存到内核消息缓冲区中，该缓冲区是公共可访问的;我们会从那里得到地址。在真正的Meltdown攻击中，攻击者必须想出一种方法来获取地址，或者他们必须猜测。</li>
+<li>秘密数据需要缓存，否则攻击的成功率会很低。要做到这一点，我们只需要使用一次秘密。我们创建了一个数据条目&#x2F;proc&#x2F;secret data ，它为用户级程序提供了一个与内核模块交互的窗口。当用户级程序读取这个条目时，将调用内核模块中的read_proc()函数，其中将加载秘密变量，从而由CPU缓存。需要注意的是，read_proc()不会将秘密数据返回给用户空间，因此它不会泄漏秘密数据。我们还需要利用meltdown攻击来获取秘密。</li>
+</ol>
+<p>为了简化攻击，我们将秘密数据存储在内核空间中，并演示用户级程序如何查找秘密数据是什么。我们使用内核模块来存储秘密数据。我们的任务是编译和执行。进入包含Makefile和MeltdownKernel.c的目录。输入make命令来编译内核模块。要安装这个内核模块，使用insmod命令。一旦我们成功地安装了内核模块，我们就可以使用dmesg命令从内核消息缓冲区中查找秘密数据的地址。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c">$ make<br>$ sudo insmod MeltdownKernel.ko<br>$ dmesg | grep ’secret data address’<br></code></pre></td></tr></table></figure>
+<p><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/22.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h3 id="Task-4-Access-Kernel-Memory-from-User-Space"><a href="#Task-4-Access-Kernel-Memory-from-User-Space" class="headerlink" title="Task 4: Access Kernel Memory from User Space"></a>Task 4: Access Kernel Memory from User Space</h3><p>现在我们知道了秘密数据的地址，让我们做一个实验，看看我们是否可以直接从这个地址得到秘密。我们实现如下图的代码并编译运行。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/23.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/24.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>编译运行程序从用户态获取内核空间，报错“Segmentation fault”，说明我们在用户空间下无法访问内核内存。</p>
+<h3 id="Task-5-Handle-Error-x2F-Exceptions-in-C"><a href="#Task-5-Handle-Error-x2F-Exceptions-in-C" class="headerlink" title="Task 5: Handle Error&#x2F;Exceptions in C"></a>Task 5: Handle Error&#x2F;Exceptions in C</h3><p>从任务4中，我们已经了解到，从用户空间访问内核内存将导致程序崩溃。在Meltdown攻击中，我们需要在访问内核内存之后做一些事情，这样我们就不能让程序崩溃。访问被禁止的内存位置将引发SIGSEGV信号;如果程序本身不处理此异常，操作系统将处理它并终止程序。这就是程序崩溃的原因。有几种方法可以防止程序因灾难性事件而崩溃。一种方法是在程序中定义自己的信号处理程序来捕获灾难性事件引发的异常。<br>与c++或其他高级语言不同，C不直接支持错误处理(也称为异常处理)，例如try&#x2F;catch子句。但是，我们可以使用sigsetjmp()和siglongjmp()模拟try&#x2F;catch子句。<br>编译运行ExceptionHandling.c，得到如下运行结果。通过sigsetjmp()和siglongjmp()模拟try…catch，可以发现程序成功捕捉到SIGSEGV信号，并且进行回滚，最后进入else异常处理分支，打印Memory access violation。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/25.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h2 id="Task-6-Out-of-Order-Execution-by-CPU"><a href="#Task-6-Out-of-Order-Execution-by-CPU" class="headerlink" title="Task 6: Out-of-Order Execution by CPU"></a>Task 6: Out-of-Order Execution by CPU</h2><p>从前面的任务中，我们知道，如果程序试图读取内核内存，访问将失败，并引发异常。但是同样，由于乱序执行技术，在CPU内部微体系结构级别我们将发现我们可以成功获取到内核数据。但是在访问检查完成之前，不会提交执行结果。而前面的任务中因为检查失败，因此由乱序执行引起的所有结果将被丢弃，就像它从未发生过一样。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/26.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>由于在乱序执行期间，被引用的内存被取出到寄存器中，也存储在缓存中。因此，它产生了可观察到的效果。使用任务1和任务2中描述的侧信道技术，我们可以观察到这样的效果。<br>将MeltdownExperiment.c中地址替换为我们在task3中得到的地址，编译并运行，就可以得到内核中的数据。原因是在执行kernel_data &#x3D; <em>(char</em>)kernel_data_addr这条语句时，CPU不会等待内存数据的访问，会继续将下一条指令加载进CPU并且执行，使得array[7<em>4096 + 1024]被加入到寄存器以及cache中。在之后的检查访问中，由于check failed，寄存器值被清空，但数据依然保存在了cache中。在Relaod中检测array[7</em>4096 + 1024]数据访问时间小于阈值，泄露出secret。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/27.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/28.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h2 id="Task-7-The-Basic-Meltdown-Attack"><a href="#Task-7-The-Basic-Meltdown-Attack" class="headerlink" title="Task 7: The Basic Meltdown Attack"></a>Task 7: The Basic Meltdown Attack</h2><p>乱序执行为我们从内核内存中读取数据创造了机会，然后使用这些数据执行可能对CPU缓存造成可观察到的影响的操作。CPU在乱序执行中能走多远取决于并行执行的访问检查有多慢。这是一个典型的竞态条件。在本任务中，我们将利用这个竞争条件从内核窃取一个秘密。</p>
+<h3 id="Task-7-1-A-Naive-Approach"><a href="#Task-7-1-A-Naive-Approach" class="headerlink" title="Task 7.1: A Naive Approach"></a>Task 7.1: A Naive Approach</h3><p>将meltdown函数简单修改，尝试直接读取内核中的数据。再次运行MeltdownExperiment.c，遗憾的是由于数据加载比安全检查慢，当安全检查完成时，内核数据仍然在从内存到寄存器的过程中，无序执行将立即中断和丢弃，所以无法获取内存secret。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/29.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/30.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h3 id="Task-7-2-Improve-the-Attack-by-Getting-the-Secret-Data-Cached"><a href="#Task-7-2-Improve-the-Attack-by-Getting-the-Secret-Data-Cached" class="headerlink" title="Task 7.2: Improve the Attack by Getting the Secret Data Cached"></a>Task 7.2: Improve the Attack by Getting the Secret Data Cached</h3><p>Meltdown是一种竞争条件漏洞，它涉及到乱序执行和访问检查之间的竞争。乱序执行的速度越快，我们可以执行的指令就越多，我们就越有可能创造出一种可观察到的效果，从而帮助我们获得秘密。<br>在我们的代码中，乱序执行的第一步涉及将内核数据加载到寄存器中。同时，对这样的访问进行安全检查。如果数据加载比安全检查慢，即当安全检查完成时，内核数据仍在从内存到寄存器的途中，那么由于访问检查失败，乱序执行将立即中断并丢弃。我们的进攻也会失败。如果内核数据已经在CPU缓存中，那么将内核数据加载到寄存器中将会快得多，并且我们可能能够在失败的检查终止乱序执行之前到达加载数组的关键指令。<br>在main函数中添加以下代码，使得在启动攻击之前缓存kernel secret data：<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/31.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>然后我们再次运行程序，遗憾的是虽然说将secret加载到Cache中，能够在meltdown中能更快的将数据加载进寄存器，但是速度的提升并不能在Access Check的竞争时间上有明显优势，所以还是失败了。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/32.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<h3 id="Task-7-3-Using-Assembly-Code-to-Trigger-Meltdown"><a href="#Task-7-3-Using-Assembly-Code-to-Trigger-Meltdown" class="headerlink" title="Task 7.3: Using Assembly Code to Trigger Meltdown"></a>Task 7.3: Using Assembly Code to Trigger Meltdown</h3><p>再次对程序做出改进，调用meltdown_asm() 代替之前的meltdown函数。该函数在内核内存访问之前添加汇编指令：先做了400次的循环，每一次循环中向eax寄存器添加一个数字0x141。这段代码是做无用的计算，但这些额外的代码占据了ALU，使得内存访问被推迟，增加了成功的可能性。<br>这一次，我们成功获得了secret。循环400次，运行10次成功8次。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/33.png" srcset="/img/loading.gif" lazyload alt="image.png">、<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/34.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>尝试修改循环次数，循环100次，运行10次成功6次。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/35.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>循环1000次，运行10次成功8次。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/36.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>理论上循环越多次就占用了ALU更多时间，命中率会更高。</p>
+<h2 id="Task-8-Make-the-Attack-More-Practical"><a href="#Task-8-Make-the-Attack-More-Practical" class="headerlink" title="Task 8: Make the Attack More Practical"></a>Task 8: Make the Attack More Practical</h2><p>即使在前面的任务中进行了优化，我们仍然可能无法每次都获得秘密数据:有时，我们的攻击产生了正确的秘密值，但有时，我们的攻击无法识别任何值或识别错误的值。为了提高准确性，我们可以使用统计技术。我们的想法是创建一个大小为256的分数数组，每个元素对应一个可能的秘密值。然后我们进行多次攻击。每次，如果我们的攻击程序说k是秘密(这个结果可能是假的)，我们给分数[k]加1。在多次运行攻击后，我们使用得分最高的值k作为我们对秘密的最终估计。这将产生比基于单次运行的估计更可靠的估计。<br>编译并运行 MeltdownAttack.c，记得要把地址改为自己在前面拿到的secret_data_addr。我就因为忘了改导致一直无法得到正确结果，还困扰了我好久的，为自己的愚蠢泪目。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/37.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>直接运行能拿到第一个字节‘S’。但是内核模块中的实际密钥共有八个字节，因此我们添加循环，读取八个字节的秘密信息。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/38.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>添加循环后每次只能稳定输出前4个字节，后面的字节可能出错，猜测原因可能是循环次数400命中率较低。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/39.png" srcset="/img/loading.gif" lazyload alt="image.png"><br>将循环次数增加到800后，能够稳定输出秘密信息“SEEDLabs”。<br><img src="/2023/05/10/Meltdown-Spectre-Attack-Lab/40.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/seed/">#seed</a>
+      
+        <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/">#软件安全</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Meltdown &amp; Spectre Attack Lab</div>
+      <div>http://example.com/2023/05/10/Meltdown-Spectre-Attack-Lab/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Keshanju</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/09/HMM%E5%AE%9E%E7%8E%B0%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%EF%BC%88NER%EF%BC%89%E4%BB%BB%E5%8A%A1/" title="HMM实现命名实体识别（NER）任务">
+                        <span class="hidden-mobile">HMM实现命名实体识别（NER）任务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
