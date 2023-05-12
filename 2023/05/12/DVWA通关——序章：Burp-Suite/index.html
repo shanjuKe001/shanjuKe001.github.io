@@ -1,0 +1,676 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Keshanju">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Burp Suite介绍Burp Suite是使用最广泛的Web应用程序安全测试软件，其原因是它是一款集成型的渗透测试工具，功能非常强大且丰富。Burp集合了多种渗透测试组件，使我们自动化地或手工地能更好地完成对Web应用的渗透测试和攻击。在渗透测试中，我们使用Burp Suite将使得测试工作变得更加容易和方便，即使在不需要娴熟的技巧的情况下，只有我们熟悉Burp Suite的使用，也使得渗透测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DVWA通关——序章：Burp Suite">
+<meta property="og:url" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/index.html">
+<meta property="og:site_name" content="Keshanju&#39;s Blog">
+<meta property="og:description" content="Burp Suite介绍Burp Suite是使用最广泛的Web应用程序安全测试软件，其原因是它是一款集成型的渗透测试工具，功能非常强大且丰富。Burp集合了多种渗透测试组件，使我们自动化地或手工地能更好地完成对Web应用的渗透测试和攻击。在渗透测试中，我们使用Burp Suite将使得测试工作变得更加容易和方便，即使在不需要娴熟的技巧的情况下，只有我们熟悉Burp Suite的使用，也使得渗透测">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/1.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/2.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/3.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/4.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/5.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/6.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/7.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/8.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/9.png">
+<meta property="article:published_time" content="2023-05-12T08:55:17.000Z">
+<meta property="article:modified_time" content="2023-05-12T09:01:41.290Z">
+<meta property="article:author" content="Keshanju">
+<meta property="article:tag" content="原创">
+<meta property="article:tag" content="DVWA">
+<meta property="article:tag" content="Burp Suite">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/1.png">
+  
+  
+  
+  <title>DVWA通关——序章：Burp Suite - Keshanju&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Keshanju&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="DVWA通关——序章：Burp Suite"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-12 16:55" pubdate>
+          2023年5月12日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">DVWA通关——序章：Burp Suite</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Burp-Suite"><a href="#Burp-Suite" class="headerlink" title="Burp Suite"></a>Burp Suite</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Burp Suite是使用最广泛的Web应用程序安全测试软件，其原因是它是一款集成型的渗透测试工具，功能非常强大且丰富。Burp集合了多种渗透测试组件，使我们自动化地或手工地能更好地完成对Web应用的渗透测试和攻击。在渗透测试中，我们使用Burp Suite将使得测试工作变得更加容易和方便，即使在不需要娴熟的技巧的情况下，只有我们熟悉Burp Suite的使用，也使得渗透测试工作变得轻松和高效。<br>本文是在学习中编写，主要是参照《Burp Suite实战指南》进行学习，在此记录学习过程和自己的理解和实践，在此附上原文链接：<a target="_blank" rel="noopener" href="https://t0data.gitbooks.io/burpsuite/content/">Burp Suite实战指南</a>。如果有人恰好看到我的文章，欢迎大家去阅读原文。</p>
+<h2 id="代理和浏览器设置"><a href="#代理和浏览器设置" class="headerlink" title="代理和浏览器设置"></a>代理和浏览器设置</h2><p>Burp Suite代理工具是以拦截代理的方式，拦截所有通过代理的网络流量，如客户端的请求数据、服务端的返回信息等。Burp Suite主要拦截http和https协议的流量，Burp Suite以中间人的方式可以对客户端请求数据、服务端返回信息做各种处理或修改，以达到安全评估测试的目的。<br>在日常生活中，我们最常用的web客户端就是web浏览器。我们可以通过设置代理对web浏览器的流量进行拦截和处理。<br>因为我使用的是Google Chrome浏览器，下面仅介绍Chrome使用Burp Suite作为代理服务器的配置步骤。</p>
+<ol>
+<li>启动Chrome浏览器，进入设置界面，在右上角搜索代理，回车即可定位到代理服务器设置功能。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/1.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="2">
+<li>点击“打开您计算机的代理设置”，即可跳转到代理服务器设置界面，将代理设置为burp默认代理：127.0.0.1：8080.</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/2.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/3.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="如何使用Burp-Suite代理"><a href="#如何使用Burp-Suite代理" class="headerlink" title="如何使用Burp Suite代理"></a>如何使用Burp Suite代理</h2><p>Burp Proxy是Burp Suite以用户驱动测试流程功能的核心，通过代理模式，可以让我们拦截、查看、修改所有在客户端和服务器之间传输的数据。</p>
+<h3 id="Burp-Proxy基本使用"><a href="#Burp-Proxy基本使用" class="headerlink" title="Burp Proxy基本使用"></a>Burp Proxy基本使用</h3><p>:::info<br>注意，本文是基于Burp Suite2023.3.3，新版本和旧版本之间可能会有一些选项卡和功能不同，请注意分辨。<br>:::</p>
+<ol>
+<li>首先，确认JRE已经安装好，Burp Suite可以启动并正常运行，且已经完成浏览器的代理服务器设置。</li>
+<li>打开Proxy功能中的Intercept选项卡，确认拦截功能为“Interception is on”状态，如果显示为“Intercept is off”则点击它，打开拦截功能。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/4.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li>打开浏览器，输入需要访问的页面并回车，这里我们以<a target="_blank" rel="noopener" href="https://www.baidu.com/">www.baidu.com</a>为例。这时我们可以看到数据流量经过Burp Proxy并暂停，知道我们点击【Forward】才会继续传输下去；而如果我们点击【Drop】，则这次通过的数据将会被丢失，不再继续处理。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/5.png" srcset="/img/loading.gif" lazyload alt="7026b0c31f031ad248a2b42a1da3087.png"></p>
+<ol start="4">
+<li>当Burp Suite拦截到客户端和服务器的交互之后，我们可以在Burp Suite的消息分析选项卡中查看到本次请求的试题内容、消息头、请求参数等信息。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/6.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="5">
+<li>Raw—-这个视图主要显示web请求的raw格式，包含请求地址、http协议版本、主机头、浏览器信息、Accept可接受的内容类型、字符集、编码方式、cookie等。我们可以手工修改这些信息，对服务端进行渗透测试。</li>
+<li>Hex—-这个视图显示Raw的二进制内容，我们可以通过hex编辑器对请求的内容进行修改。</li>
+<li>Inspector—-Inspector是最近的新版本才有的东西（具体哪个版本不太清楚，我在2020年的帖子中看到的版本就没有，反正它好用就对了），Inspector使我们能够快速查看和编辑HTTP和web Socket消息，而无需在不同的选项卡之间切换。我们可以从所有Burp Suite中消息编辑器的右侧可折叠面板访问。使用它我们可以：<ol>
+<li>查看参数或cookie，或者我们在编辑器中选择的子字符串的完全解码值。</li>
+<li>只需单击按钮即可添加、删除和重排序项目，这样我们就不必使用原始HTTP语法。</li>
+<li>以解码形式编辑数据。更新请求时，序列会自动重新编码。</li>
+<li>切换用于发送单个请求的协议。Burp会自动执行转换，为新协议生成等效请求。</li>
+<li>使用HTTP标头或伪标头，而无需绑定到消息编辑器的HTTP&#x2F;1样式语法。这使我们能够使用许多高级技术进行特定于HTTP&#x2F;2的测试。</li>
+</ol>
+</li>
+</ol>
+<p>其中一些功能仅适用于可编辑的请求。例如，我们可以在Burp Repeater或Burp Proxy中找到截获的请求。</p>
+<p>默认情况下，Burp Proxy只拦截请求的消息，普通文件请求如css,js,图片是不会被拦截的，我们可以修改默认的拦截选项来拦截这些静态文件，当然，你也可以通过修改拦截的作用域、参数或者服务器端返回的关键字来控制Burp Proxy的消息拦截，当然，这些要到更高级的使用再学习。所有流经Burp Proxy的消息，都会在http history记录下来，我们可以通过历史选项卡，查看传输的数据内容，对交互的数据进行测试和验证。同时，对于拦截到的消息和历史消息，都可以通过右击弹出菜单，发送到Burp的其他组件，如Spider、Scanner、Repeater、Intruder、Sequencer、Decoder、Comparer、Extender，进行进一步的测试。如下图所示：<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/7.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="数据拦截与控制"><a href="#数据拦截与控制" class="headerlink" title="数据拦截与控制"></a>数据拦截与控制</h3><p>Burp Proxy的拦截功能主要由Intercept选项卡中的Forward、Drop、Interception is on&#x2F;off、Action、Comment 以及Highlight构成，它们的功能分别是： <strong>Forward</strong>的功能是当你查看过消息或者重新编辑过消息之后，点击此按钮，将发送消息至服务器端。 <strong>Drop</strong>的功能是你想丢失当前拦截的消息，不再forward到服务器端。 <strong>Interception is on</strong>表示拦截功能打开，拦截所有通过Burp Proxy的请求数据；<strong>Interception is off</strong>表示拦截功能关闭，不再拦截通过Burp Proxy的所有请求数据。 <strong>Action</strong>的功能是除了将当前请求的消息传递到Spider、Scanner、Repeater、Intruder、Sequencer、Decoder、Comparer组件外，还可以做一些请求消息的修改，如改变GET或者POST请求方式、改变请求body的编码，同时也可以改变请求消息的拦截设置，如不再拦截此主机的消息、不再拦截此IP地址的消息、不再拦截此种文件类型的消息、不再拦截此目录的消息，也可以指定针对此消息拦截它的服务器端返回消息。右边的输入框就是Comment，再右边彩色的那块就是Highlight。<strong>Comment</strong>的功能是指对拦截的消息添加备注，在一次渗透测试中，你通常会遇到一连串的请求消息，为了便于区分，在某个关键的请求消息上，你可以添加备注信息。<strong>Highlight</strong>的功能与Comment功能有点类似，即对当前拦截的消息设置高亮，以便于其他的请求消息相区分。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/8.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="如何使用Burp拦截本地流量"><a href="#如何使用Burp拦截本地流量" class="headerlink" title="如何使用Burp拦截本地流量"></a>如何使用Burp拦截本地流量</h3><p>在我尝试使用Burp拦截DVWA靶场的请求时，发现Burp可以正常抓取web浏览器正常的数据，但是无法抓取到Chrome的来自127.0.0.1的数据，将浏览器换成Edge也不行，并且我已经安装了Burp证书还是不行，网址是这样的：<a target="_blank" rel="noopener" href="http://127.0.0.1/DVWA/vulnerabilities/brute/?username=admin&password=123&Login=Login#">http://127.0.0.1/DVWA/vulnerabilities/brute/?username=admin&password=123&Login=Login#</a>。<br>解决方案：将127.0.0.1改为本机的ip，具体方法就是cmd-&gt;ipconfig查询，大家都懂的吧。修改之后就可以成功截取到数据包。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/9.png" srcset="/img/loading.gif" lazyload><br>那Burp的基础使用就到这里啦，后续需要用到的功能我也会在实践中遇到的时候再继续学习，这个系列主打的就是真实，从0开始在实战过程中积累经验，我会每天学一点，然后整理好一块之后就会发到博客，大家一起学习，共同进步！</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8E%9F%E5%88%9B/">#原创</a>
+      
+        <a href="/tags/DVWA/">#DVWA</a>
+      
+        <a href="/tags/Burp-Suite/">#Burp Suite</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>DVWA通关——序章：Burp Suite</div>
+      <div>http://example.com/2023/05/12/DVWA通关——序章：Burp-Suite/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Keshanju</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/10/Meltdown-Spectre-Attack-Lab/" title="Meltdown &amp; Spectre Attack Lab">
+                        <span class="hidden-mobile">Meltdown &amp; Spectre Attack Lab</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
