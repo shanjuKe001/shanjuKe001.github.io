@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Keshanju">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言之前就准备开始做这个模块了，但是在学习（看博客）过程中发现需要用到Burp Suite，而我只是在去年的一门专业课中短暂的用过（做过一个lab），导致现在对于Burp属于啥也不知道的状态，因此先去学习了Burp的基本使用，也已经整理好博客：DVWA通关——序章：Burp Suite，欢迎惠读。好了，做好准备工作，现在我们开始正式的Brute Force渗透之旅。 Low进入我们搭建好的DVWA">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DVWA通关——Brute Force暴力破解">
+<meta property="og:url" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Keshanju&#39;s Blog">
+<meta property="og:description" content="前言之前就准备开始做这个模块了，但是在学习（看博客）过程中发现需要用到Burp Suite，而我只是在去年的一门专业课中短暂的用过（做过一个lab），导致现在对于Burp属于啥也不知道的状态，因此先去学习了Burp的基本使用，也已经整理好博客：DVWA通关——序章：Burp Suite，欢迎惠读。好了，做好准备工作，现在我们开始正式的Brute Force渗透之旅。 Low进入我们搭建好的DVWA">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/1.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/2.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/3.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/4.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/5.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/6.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/7.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/8.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/9.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/10.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/11.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/12.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/13.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/14.png">
+<meta property="og:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/15.png">
+<meta property="article:published_time" content="2023-05-12T15:03:31.000Z">
+<meta property="article:modified_time" content="2023-05-12T15:14:55.171Z">
+<meta property="article:author" content="Keshanju">
+<meta property="article:tag" content="原创">
+<meta property="article:tag" content="DVWA">
+<meta property="article:tag" content="Brute Force">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/1.png">
+  
+  
+  
+  <title>DVWA通关——Brute Force暴力破解 - Keshanju&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Keshanju&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="DVWA通关——Brute Force暴力破解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-12 23:03" pubdate>
+          2023年5月12日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          105 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">DVWA通关——Brute Force暴力破解</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前就准备开始做这个模块了，但是在学习（看博客）过程中发现需要用到Burp Suite，而我只是在去年的一门专业课中短暂的用过（做过一个lab），导致现在对于Burp属于啥也不知道的状态，因此先去学习了Burp的基本使用，也已经整理好博客：<a target="_blank" rel="noopener" href="https://shanjuke001.github.io/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/">DVWA通关——序章：Burp Suite</a>，欢迎惠读。<br>好了，做好准备工作，现在我们开始正式的Brute Force渗透之旅。</p>
+<h1 id="Low"><a href="#Low" class="headerlink" title="Low"></a>Low</h1><p>进入我们搭建好的DVWA靶场，在“DVWA Security”中设置难度为low，开始攻击！<br>Brute Force的界面是这样的一个login窗口，可以输入用户名和密码进行登录：<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/1.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;Login&#x27;</span> ] ) ) &#123;<br>  <span class="hljs-comment">// Get username</span><br>  <span class="hljs-variable">$user</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;username&#x27;</span> ];<br><br>	<span class="hljs-comment">// Get password</span><br>	<span class="hljs-variable">$pass</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;password&#x27;</span> ];<br>	<span class="hljs-variable">$pass</span> = <span class="hljs-title function_ invoke__">md5</span>( <span class="hljs-variable">$pass</span> );<br><br>	<span class="hljs-comment">// Check the database</span><br>	<span class="hljs-variable">$query</span>  = <span class="hljs-string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="hljs-subst">$user</span>&#x27; AND password = &#x27;<span class="hljs-subst">$pass</span>&#x27;;&quot;</span>;<br>	<span class="hljs-variable">$result</span> = <span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$query</span> ) <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span>( <span class="hljs-string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_error</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_connect_error</span>()) ? <span class="hljs-variable">$___mysqli_res</span> : <span class="hljs-literal">false</span>)) . <span class="hljs-string">&#x27;&lt;/pre&gt;&#x27;</span> );<br><br>	<span class="hljs-keyword">if</span>( <span class="hljs-variable">$result</span> &amp;&amp; <span class="hljs-title function_ invoke__">mysqli_num_rows</span>( <span class="hljs-variable">$result</span> ) == <span class="hljs-number">1</span> ) &#123;<br>  	<span class="hljs-comment">// Get users details</span><br>  	<span class="hljs-variable">$row</span>    = <span class="hljs-title function_ invoke__">mysqli_fetch_assoc</span>( <span class="hljs-variable">$result</span> );<br>  	<span class="hljs-variable">$avatar</span> = <span class="hljs-variable">$row</span>[<span class="hljs-string">&quot;avatar&quot;</span>];<br><br>  	<span class="hljs-comment">// Login successful</span><br>  	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;Welcome to the password protected area <span class="hljs-subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;<br>  	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;img src=\&quot;<span class="hljs-subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;<br>	&#125;<br>	<span class="hljs-keyword">else</span> &#123;<br>  	<span class="hljs-comment">// Login failed</span><br>  	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;</span><br><span class="hljs-string">Username and/or password incorrect.&lt;/pre&gt;&quot;</span>;<br>	&#125;<br><br>	((<span class="hljs-title function_ invoke__">is_null</span>(<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="hljs-literal">false</span> : <span class="hljs-variable">$___mysqli_res</span>);<br>&#125;<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>通过源码我们可以看到，代码首先验证了参数“Login”是否被设置。只有在提供这个参数时，代码才会执行。它获取输入的用户名和密码，然后执行了一条SQL查询语句，从“users”数据库里面检索判断用户输入是否有效。<br>可以发现，这个代码并没有任何的放爆破机制，并且对参数username没有做任何过滤，仅对password取了md5，存在极为明显的SQL注入漏洞。</p>
+<h2 id="爆破"><a href="#爆破" class="headerlink" title="爆破"></a>爆破</h2><ol>
+<li>我们随便输入一个用户名和密码，然后使用Burp进行拦截。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/2.png" srcset="/img/loading.gif" lazyload><br>这里我们可以看到，用户名和密码都是明文，我输入的用户名和密码都是“123”。</p>
+<ol start="2">
+<li>我们在Action中选择“Send to Intruder”发送到爆破板块，点击“Proxy”右侧的“Intruder”选项卡，并设置爆破类型。</li>
+</ol>
+<p>爆破类型共有四种：Sniper（狙击手）、Battering ram（攻城锤）、Pitchfork（草叉模式）、Cluster bomb（集束炸弹）。这里我们选择Cluster bomb，因为只有这样我们才能同时爆破出用户名和密码。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/3.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li>选择我们要爆破的字段，因为我们是要对用户名和密码进行爆破，所以我们要把这两个变量设置为爆破点。方法是页面右侧的选项卡：<strong>Add，Clear，Auto，Refresh，</strong>首先点击<strong>Clear</strong>清除所有爆破点，然后我们再选中两个字段分别点击<strong>Add</strong>选项卡设置爆破点。成功设置如下：</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/4.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="4">
+<li>点击页面上方的Payloads选项，进行Payload构造。需要对两个payload进行设置，首先选择第一个，也就是“username”,Payload type设置为“Simple list”，然后在下方Payload settings中添加payload，可以导入提前准备好的username文件，也可以手动添加。然后选择第二个payload set，导入准备好的字典。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/5.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/6.png" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>在进行爆破的时候，一般先用top1w这种通用弱口令字典进行尝试。另外，somd5提供了一些通用弱口令字典的下载：<a target="_blank" rel="noopener" href="https://www.somd5.com/download/dict/">https://www.somd5.com/download/dict/</a>。另外例如Burp Suite的官网的lab也会有提供常用的密码：<a target="_blank" rel="noopener" href="https://portswigger.net/web-security/authentication/auth-lab-passwords">https://portswigger.net/web-security/authentication/auth-lab-passwords</a>。</p>
+</blockquote>
+<ol start="5">
+<li>设置好payload之后，我们点击右上角的<strong>Start Attack</strong>按钮进行爆破。总次数为set1的payload数量<em>set2的payload数量，比如我设置了6个用户名和100个密码，就会爆破6</em>100&#x3D;600次。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/7.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="6">
+<li>将得到的结果以length进行排序，可以发现用户名为“admin”，密码为“password”的length与众不同，由此我们可以猜测这就是一组正确的“用户名-密码”对，输入进行测试，发现可以成功。当然，事实上这个payload的构造是基于我已经知道“admin-password”是一组正确的答案了，在实际进行爆破时，看到是需要有一个强大的字典的。</li>
+</ol>
+<p><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/8.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/9.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h2><p>出于对源码的分析，我们也可以采用SQL注入的方式通过此关，原因是没有对username进行任何处理。在知道有一个正确的用户名是admin的基础下，我们可以在Username栏输入“admin ‘ #”或“admin ‘ or ‘1’&#x3D;’1”也能成功登录。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/10.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="Medium"><a href="#Medium" class="headerlink" title="Medium"></a>Medium</h1><h2 id="源码分析-1"><a href="#源码分析-1" class="headerlink" title="源码分析"></a>源码分析</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;Login&#x27;</span> ] ) ) &#123;<br>    <span class="hljs-comment">// Sanitise username input</span><br>    <span class="hljs-variable">$user</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;username&#x27;</span> ];<br>    <span class="hljs-variable">$user</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$user</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br><br>    <span class="hljs-comment">// Sanitise password input</span><br>    <span class="hljs-variable">$pass</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;password&#x27;</span> ];<br>    <span class="hljs-variable">$pass</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$pass</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br>    <span class="hljs-variable">$pass</span> = <span class="hljs-title function_ invoke__">md5</span>( <span class="hljs-variable">$pass</span> );<br><br>    <span class="hljs-comment">// Check the database</span><br>    <span class="hljs-variable">$query</span>  = <span class="hljs-string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="hljs-subst">$user</span>&#x27; AND password = &#x27;<span class="hljs-subst">$pass</span>&#x27;;&quot;</span>;<br>    <span class="hljs-variable">$result</span> = <span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$query</span> ) <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span>( <span class="hljs-string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_error</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_connect_error</span>()) ? <span class="hljs-variable">$___mysqli_res</span> : <span class="hljs-literal">false</span>)) . <span class="hljs-string">&#x27;&lt;/pre&gt;&#x27;</span> );<br><br>    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$result</span> &amp;&amp; <span class="hljs-title function_ invoke__">mysqli_num_rows</span>( <span class="hljs-variable">$result</span> ) == <span class="hljs-number">1</span> ) &#123;<br>        <span class="hljs-comment">// Get users details</span><br>        <span class="hljs-variable">$row</span>    = <span class="hljs-title function_ invoke__">mysqli_fetch_assoc</span>( <span class="hljs-variable">$result</span> );<br>        <span class="hljs-variable">$avatar</span> = <span class="hljs-variable">$row</span>[<span class="hljs-string">&quot;avatar&quot;</span>];<br><br>        <span class="hljs-comment">// Login successful</span><br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;Welcome to the password protected area <span class="hljs-subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;img src=\&quot;<span class="hljs-subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// Login failed</span><br>        <span class="hljs-title function_ invoke__">sleep</span>( <span class="hljs-number">2</span> );<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;</span><br><span class="hljs-string">Username and/or password incorrect.&lt;/pre&gt;&quot;</span>;<br>    &#125;<br><br>    ((<span class="hljs-title function_ invoke__">is_null</span>(<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="hljs-literal">false</span> : <span class="hljs-variable">$___mysqli_res</span>);<br>&#125;<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>这个代码相较于Low的代码做了一些安全优化。首先，为了防止数据库被注入攻击，使用<strong>mysqli_real_escape_string</strong>对输入进行了过滤和转义；其次，如果没有匹配到用户，增加了一个2s的等待时间，以防止暴力破解密码。</p>
+<h2 id="爆破-1"><a href="#爆破-1" class="headerlink" title="爆破"></a>爆破</h2><p>这个方法和Low的一摸一样，只是因为有2s的等待时间导致需要的时间变长了一点而已。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/11.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="High"><a href="#High" class="headerlink" title="High"></a>High</h1><h2 id="源码分析-2"><a href="#源码分析-2" class="headerlink" title="源码分析"></a>源码分析</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;Login&#x27;</span> ] ) ) &#123;<br>    <span class="hljs-comment">// Check Anti-CSRF token</span><br>    <span class="hljs-title function_ invoke__">checkToken</span>( <span class="hljs-variable">$_REQUEST</span>[ <span class="hljs-string">&#x27;user_token&#x27;</span> ], <span class="hljs-variable">$_SESSION</span>[ <span class="hljs-string">&#x27;session_token&#x27;</span> ], <span class="hljs-string">&#x27;index.php&#x27;</span> );<br><br>    <span class="hljs-comment">// Sanitise username input</span><br>    <span class="hljs-variable">$user</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;username&#x27;</span> ];<br>    <span class="hljs-variable">$user</span> = <span class="hljs-title function_ invoke__">stripslashes</span>( <span class="hljs-variable">$user</span> );<br>    <span class="hljs-variable">$user</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$user</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br><br>    <span class="hljs-comment">// Sanitise password input</span><br>    <span class="hljs-variable">$pass</span> = <span class="hljs-variable">$_GET</span>[ <span class="hljs-string">&#x27;password&#x27;</span> ];<br>    <span class="hljs-variable">$pass</span> = <span class="hljs-title function_ invoke__">stripslashes</span>( <span class="hljs-variable">$pass</span> );<br>    <span class="hljs-variable">$pass</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$pass</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br>    <span class="hljs-variable">$pass</span> = <span class="hljs-title function_ invoke__">md5</span>( <span class="hljs-variable">$pass</span> );<br><br>    <span class="hljs-comment">// Check database</span><br>    <span class="hljs-variable">$query</span>  = <span class="hljs-string">&quot;SELECT * FROM `users` WHERE user = &#x27;<span class="hljs-subst">$user</span>&#x27; AND password = &#x27;<span class="hljs-subst">$pass</span>&#x27;;&quot;</span>;<br>    <span class="hljs-variable">$result</span> = <span class="hljs-title function_ invoke__">mysqli_query</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$query</span> ) <span class="hljs-keyword">or</span> <span class="hljs-keyword">die</span>( <span class="hljs-string">&#x27;&lt;pre&gt;&#x27;</span> . ((<span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_error</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) : ((<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_connect_error</span>()) ? <span class="hljs-variable">$___mysqli_res</span> : <span class="hljs-literal">false</span>)) . <span class="hljs-string">&#x27;&lt;/pre&gt;&#x27;</span> );<br><br>    <span class="hljs-keyword">if</span>( <span class="hljs-variable">$result</span> &amp;&amp; <span class="hljs-title function_ invoke__">mysqli_num_rows</span>( <span class="hljs-variable">$result</span> ) == <span class="hljs-number">1</span> ) &#123;<br>        <span class="hljs-comment">// Get users details</span><br>        <span class="hljs-variable">$row</span>    = <span class="hljs-title function_ invoke__">mysqli_fetch_assoc</span>( <span class="hljs-variable">$result</span> );<br>        <span class="hljs-variable">$avatar</span> = <span class="hljs-variable">$row</span>[<span class="hljs-string">&quot;avatar&quot;</span>];<br><br>        <span class="hljs-comment">// Login successful</span><br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;Welcome to the password protected area <span class="hljs-subst">&#123;$user&#125;</span>&lt;/p&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;img src=\&quot;<span class="hljs-subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// Login failed</span><br>        <span class="hljs-title function_ invoke__">sleep</span>( <span class="hljs-title function_ invoke__">rand</span>( <span class="hljs-number">0</span>, <span class="hljs-number">3</span> ) );<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;</span><br><span class="hljs-string">Username and/or password incorrect.&lt;/pre&gt;&quot;</span>;<br>    &#125;<br><br>    ((<span class="hljs-title function_ invoke__">is_null</span>(<span class="hljs-variable">$___mysqli_res</span> = <span class="hljs-title function_ invoke__">mysqli_close</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]))) ? <span class="hljs-literal">false</span> : <span class="hljs-variable">$___mysqli_res</span>);<br>&#125;<br><br><span class="hljs-comment">// Generate Anti-CSRF token</span><br><span class="hljs-title function_ invoke__">generateSessionToken</span>();<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>High级别的代码相较于Medium，又新增了Anti-CSRF token来抵御CSRF的攻击。由于使用了Anti-CSRF token，每次服务器返回的登陆页面中都会包含一个随机的user_token的值，用户每次登录时都要将user_token一起提交。服务器收到请求后，会优先做token的检查，再进行sql查询。所以，我们不能再利用burpsuite进行无脑式的爆破了。</p>
+<h2 id="爆破-2"><a href="#爆破-2" class="headerlink" title="爆破"></a>爆破</h2><p>俗话说得好：“道高一尺，魔高一丈”，Burp本身也在进化（误）。现在的Burp里就有CSRF的token追踪插件，下载方法：Extensions-&gt;BApp Store，搜索CSRF下载，插件名称：<strong>CSRF Token Tracker</strong>。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/12.png" srcset="/img/loading.gif" lazyload><br>插件的使用方法也很简单，首先我们进行拦截，获取想要追踪的字段。很显然，报文中的<strong>user_token</strong>就是我们需要的字段。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/13.png" srcset="/img/loading.gif" lazyload><br>然后我们打开插件，勾选上Sync request based on the following rules，然后增加一条rule并勾选上就行。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/14.png" srcset="/img/loading.gif" lazyload><br>设置完成之后，我们就又可以进行愉快的爆破了。方法和前面一样，也能正常得到结果了。<br><img src="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/15.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<p>我发现一个很迷惑的操作，因为我是跟着网上的教程在做的，所以我直接下载了插件并设置好了参数进行攻击。但是，我突发奇想想要看看要是没有这个插件的话，爆破会以什么样的方式失败。于是我关掉了插件进行爆破，可是结果居然成功了？不确定的我重启了软件并再次测试，可是依然能够成功？现在我不太确定到底是插件本身被默认应用了，还是说我使用的Burp2023版本已经自带了tarck token的功能？我想删除插件再次尝试，可是找了半天也不知道怎么删除，网上也没有找到方法。先这样吧，希望我后续能够理解。另外，也正好提醒自己，还有看到这里的各位，即使是新手也一定要先尝试自己实践，无法解决了再去网上学习，不要直接跟着教程做。嗯，我后续一定会的。（大概）</p>
+<h1 id="Impossible"><a href="#Impossible" class="headerlink" title="Impossible"></a>Impossible</h1><h2 id="源码分析-3"><a href="#源码分析-3" class="headerlink" title="源码分析"></a>源码分析</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">if</span>( <span class="hljs-keyword">isset</span>( <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;Login&#x27;</span> ] ) &amp;&amp; <span class="hljs-keyword">isset</span> (<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;username&#x27;</span>]) &amp;&amp; <span class="hljs-keyword">isset</span> (<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;password&#x27;</span>]) ) &#123;<br>    <span class="hljs-comment">// Check Anti-CSRF token</span><br>    <span class="hljs-title function_ invoke__">checkToken</span>( <span class="hljs-variable">$_REQUEST</span>[ <span class="hljs-string">&#x27;user_token&#x27;</span> ], <span class="hljs-variable">$_SESSION</span>[ <span class="hljs-string">&#x27;session_token&#x27;</span> ], <span class="hljs-string">&#x27;index.php&#x27;</span> );<br><br>    <span class="hljs-comment">// Sanitise username input</span><br>    <span class="hljs-variable">$user</span> = <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;username&#x27;</span> ];<br>    <span class="hljs-variable">$user</span> = <span class="hljs-title function_ invoke__">stripslashes</span>( <span class="hljs-variable">$user</span> );<br>    <span class="hljs-variable">$user</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$user</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br><br>    <span class="hljs-comment">// Sanitise password input</span><br>    <span class="hljs-variable">$pass</span> = <span class="hljs-variable">$_POST</span>[ <span class="hljs-string">&#x27;password&#x27;</span> ];<br>    <span class="hljs-variable">$pass</span> = <span class="hljs-title function_ invoke__">stripslashes</span>( <span class="hljs-variable">$pass</span> );<br>    <span class="hljs-variable">$pass</span> = ((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>]) &amp;&amp; <span class="hljs-title function_ invoke__">is_object</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>])) ? <span class="hljs-title function_ invoke__">mysqli_real_escape_string</span>(<span class="hljs-variable">$GLOBALS</span>[<span class="hljs-string">&quot;___mysqli_ston&quot;</span>],  <span class="hljs-variable">$pass</span> ) : ((<span class="hljs-title function_ invoke__">trigger_error</span>(<span class="hljs-string">&quot;[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.&quot;</span>, E_USER_ERROR)) ? <span class="hljs-string">&quot;&quot;</span> : <span class="hljs-string">&quot;&quot;</span>));<br>    <span class="hljs-variable">$pass</span> = <span class="hljs-title function_ invoke__">md5</span>( <span class="hljs-variable">$pass</span> );<br><br>    <span class="hljs-comment">// Default values</span><br>    <span class="hljs-variable">$total_failed_login</span> = <span class="hljs-number">3</span>;<br>    <span class="hljs-variable">$lockout_time</span>       = <span class="hljs-number">15</span>;<br>    <span class="hljs-variable">$account_locked</span>     = <span class="hljs-literal">false</span>;<br><br>    <span class="hljs-comment">// Check the database (Check user information)</span><br>    <span class="hljs-variable">$data</span> = <span class="hljs-variable">$db</span>-&gt;<span class="hljs-title function_ invoke__">prepare</span>( <span class="hljs-string">&#x27;SELECT failed_login, last_login FROM users WHERE user = (:user) LIMIT 1;&#x27;</span> );<br>    <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">bindParam</span>( <span class="hljs-string">&#x27;:user&#x27;</span>, <span class="hljs-variable">$user</span>, PDO::<span class="hljs-variable constant_">PARAM_STR</span> );<br>    <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">execute</span>();<br>    <span class="hljs-variable">$row</span> = <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">fetch</span>();<br><br>    <span class="hljs-comment">// Check to see if the user has been locked out.</span><br>    <span class="hljs-keyword">if</span>( ( <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">rowCount</span>() == <span class="hljs-number">1</span> ) &amp;&amp; ( <span class="hljs-variable">$row</span>[ <span class="hljs-string">&#x27;failed_login&#x27;</span> ] &gt;= <span class="hljs-variable">$total_failed_login</span> ) )  &#123;<br>        <span class="hljs-comment">// User locked out.  Note, using this method would allow for user enumeration!</span><br>        <span class="hljs-comment">//echo &quot;&lt;pre&gt;</span><br>This account has been locked due to too many incorrect logins.&lt;/pre&gt;<span class="hljs-string">&quot;;</span><br><span class="hljs-string"></span><br><span class="hljs-string">        // Calculate when the user would be allowed to login again</span><br><span class="hljs-string">        <span class="hljs-subst">$last_login</span> = strtotime( <span class="hljs-subst">$row</span>[ &#x27;last_login&#x27; ] );</span><br><span class="hljs-string">        <span class="hljs-subst">$timeout</span>    = <span class="hljs-subst">$last_login</span> + (<span class="hljs-subst">$lockout_time</span> * 60);</span><br><span class="hljs-string">        <span class="hljs-subst">$timenow</span>    = time();</span><br><span class="hljs-string"></span><br><span class="hljs-string">        /*</span><br><span class="hljs-string">        print &quot;</span>The last login was: <span class="hljs-string">&quot; . date (&quot;</span>h:i:s<span class="hljs-string">&quot;, <span class="hljs-subst">$last_login</span>) . &quot;</span><br><span class="hljs-string">&quot;;</span><br><span class="hljs-string">        print &quot;</span>The timenow is: <span class="hljs-string">&quot; . date (&quot;</span>h:i:s<span class="hljs-string">&quot;, <span class="hljs-subst">$timenow</span>) . &quot;</span><br><span class="hljs-string">&quot;;</span><br><span class="hljs-string">        print &quot;</span>The timeout is: <span class="hljs-string">&quot; . date (&quot;</span>h:i:s<span class="hljs-string">&quot;, <span class="hljs-subst">$timeout</span>) . &quot;</span><br><span class="hljs-string">&quot;;</span><br><span class="hljs-string">        */</span><br><span class="hljs-string"></span><br><span class="hljs-string">        // Check to see if enough time has passed, if it hasn&#x27;t locked the account</span><br><span class="hljs-string">        if( <span class="hljs-subst">$timenow</span> &lt; <span class="hljs-subst">$timeout</span> ) &#123;</span><br><span class="hljs-string">            <span class="hljs-subst">$account_locked</span> = true;</span><br><span class="hljs-string">            // print &quot;</span>The account is locked<br><span class="hljs-string">&quot;;</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">    // Check the database (if username matches the password)</span><br><span class="hljs-string">    <span class="hljs-subst">$data</span> = <span class="hljs-subst">$db</span>-&gt;prepare( &#x27;SELECT * FROM users WHERE user = (:user) AND password = (:password) LIMIT 1;&#x27; );</span><br><span class="hljs-string">    <span class="hljs-subst">$data</span>-&gt;bindParam( &#x27;:user&#x27;, <span class="hljs-subst">$user</span>, PDO::PARAM_STR);</span><br><span class="hljs-string">    <span class="hljs-subst">$data</span>-&gt;bindParam( &#x27;:password&#x27;, <span class="hljs-subst">$pass</span>, PDO::PARAM_STR );</span><br><span class="hljs-string">    <span class="hljs-subst">$data</span>-&gt;execute();</span><br><span class="hljs-string">    <span class="hljs-subst">$row</span> = <span class="hljs-subst">$data</span>-&gt;fetch();</span><br><span class="hljs-string"></span><br><span class="hljs-string">    // If its a valid login...</span><br><span class="hljs-string">    if( ( <span class="hljs-subst">$data</span>-&gt;rowCount() == 1 ) &amp;&amp; ( <span class="hljs-subst">$account_locked</span> == false ) ) &#123;</span><br><span class="hljs-string">        // Get users details</span><br><span class="hljs-string">        <span class="hljs-subst">$avatar</span>       = <span class="hljs-subst">$row</span>[ &#x27;avatar&#x27; ];</span><br><span class="hljs-string">        <span class="hljs-subst">$failed_login</span> = <span class="hljs-subst">$row</span>[ &#x27;failed_login&#x27; ];</span><br><span class="hljs-string">        <span class="hljs-subst">$last_login</span>   = <span class="hljs-subst">$row</span>[ &#x27;last_login&#x27; ];</span><br><span class="hljs-string"></span><br><span class="hljs-string">        // Login successful</span><br><span class="hljs-string">        echo &quot;</span>&lt;p&gt;Welcome to the password <span class="hljs-keyword">protected</span> area &lt;em&gt;&#123;<span class="hljs-variable">$user</span>&#125;&lt;/em&gt;&lt;/p&gt;<span class="hljs-string">&quot;;</span><br><span class="hljs-string">        echo &quot;</span>&lt;img src=\<span class="hljs-string">&quot;<span class="hljs-subst">&#123;$avatar&#125;</span>\&quot; /&gt;&quot;</span>;<br><br>        <span class="hljs-comment">// Had the account been locked out since last login?</span><br>        <span class="hljs-keyword">if</span>( <span class="hljs-variable">$failed_login</span> &gt;= <span class="hljs-variable">$total_failed_login</span> ) &#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;&lt;em&gt;Warning&lt;/em&gt;: Someone might of been brute forcing your account.&lt;/p&gt;&quot;</span>;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;Number of login attempts: &lt;em&gt;<span class="hljs-subst">&#123;$failed_login&#125;</span>&lt;/em&gt;.</span><br><span class="hljs-string">Last login attempt was at: &lt;em&gt;<span class="hljs-subst">&#123;$last_login&#125;</span>&lt;/em&gt;.&lt;/p&gt;&quot;</span>;<br>        &#125;<br><br>        <span class="hljs-comment">// Reset bad login count</span><br>        <span class="hljs-variable">$data</span> = <span class="hljs-variable">$db</span>-&gt;<span class="hljs-title function_ invoke__">prepare</span>( <span class="hljs-string">&#x27;UPDATE users SET failed_login = &quot;0&quot; WHERE user = (:user) LIMIT 1;&#x27;</span> );<br>        <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">bindParam</span>( <span class="hljs-string">&#x27;:user&#x27;</span>, <span class="hljs-variable">$user</span>, PDO::<span class="hljs-variable constant_">PARAM_STR</span> );<br>        <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">execute</span>();<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-comment">// Login failed</span><br>        <span class="hljs-title function_ invoke__">sleep</span>( <span class="hljs-title function_ invoke__">rand</span>( <span class="hljs-number">2</span>, <span class="hljs-number">4</span> ) );<br><br>        <span class="hljs-comment">// Give the user some feedback</span><br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;</span><br><span class="hljs-string">Username and/or password incorrect.</span><br><span class="hljs-string">&lt;br/&gt;Alternative, the account has been locked because of too many failed logins.</span><br><span class="hljs-string">If this is the case, &lt;em&gt;please try again in <span class="hljs-subst">&#123;$lockout_time&#125;</span> minutes&lt;/em&gt;.&lt;/pre&gt;&quot;</span>;<br><br>        <span class="hljs-comment">// Update bad login count</span><br>        <span class="hljs-variable">$data</span> = <span class="hljs-variable">$db</span>-&gt;<span class="hljs-title function_ invoke__">prepare</span>( <span class="hljs-string">&#x27;UPDATE users SET failed_login = (failed_login + 1) WHERE user = (:user) LIMIT 1;&#x27;</span> );<br>        <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">bindParam</span>( <span class="hljs-string">&#x27;:user&#x27;</span>, <span class="hljs-variable">$user</span>, PDO::<span class="hljs-variable constant_">PARAM_STR</span> );<br>        <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">execute</span>();<br>    &#125;<br><br>    <span class="hljs-comment">// Set the last login time</span><br>    <span class="hljs-variable">$data</span> = <span class="hljs-variable">$db</span>-&gt;<span class="hljs-title function_ invoke__">prepare</span>( <span class="hljs-string">&#x27;UPDATE users SET last_login = now() WHERE user = (:user) LIMIT 1;&#x27;</span> );<br>    <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">bindParam</span>( <span class="hljs-string">&#x27;:user&#x27;</span>, <span class="hljs-variable">$user</span>, PDO::<span class="hljs-variable constant_">PARAM_STR</span> );<br>    <span class="hljs-variable">$data</span>-&gt;<span class="hljs-title function_ invoke__">execute</span>();<br>&#125;<br><br><span class="hljs-comment">// Generate Anti-CSRF token</span><br><span class="hljs-title function_ invoke__">generateSessionToken</span>();<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>Impossible在前面的基础上加上了锁定的机制，基本上直接破除了暴力破解的可能。其主要思路是在用户累计3次（不需要连续）登陆失败后就会锁定15分钟，等到解锁后才能继续尝试登录。这种方式兼顾用户体验和安全性，使暴力破解的时间成本达到了不可接受的地步。因此目前很多网站和应用基本上都是采取这样的思路，只是允许尝试的次数和锁定的时间不同。比如小米手机解锁，密码错误五次之后就锁定一分钟，之后再错一次就到五分钟还是十分钟（记不太清了），而且后面时间越来越指数倍的增加。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/elephantxiang/article/details/118914098">DVWA通关–Brute Force(暴力破解)</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_73248913/article/details/128769294">dvwa靶场Brute Force（暴力破解）全难度教程（附代码分析）</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qi-yuan/p/12395524.html">DVWA——Brute Force(暴力破解)</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8E%9F%E5%88%9B/">#原创</a>
+      
+        <a href="/tags/DVWA/">#DVWA</a>
+      
+        <a href="/tags/Brute-Force/">#Brute Force</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>DVWA通关——Brute Force暴力破解</div>
+      <div>http://example.com/2023/05/12/DVWA通关——Brute-Force暴力破解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Keshanju</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94%E5%BA%8F%E7%AB%A0%EF%BC%9ABurp-Suite/" title="DVWA通关——序章：Burp Suite">
+                        <span class="hidden-mobile">DVWA通关——序章：Burp Suite</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
